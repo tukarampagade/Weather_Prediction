@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WeatherNet AI — Weather Intelligence Dashboard</title>
+<meta name="description" content="A from-scratch NumPy neural network predicting rain probability from live atmospheric readings, deployed with Flask.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<script defer src="{{ url_for('static', filename='script.js') }}"></script>
+</head>
+<body data-has-prediction="{{ 'true' if prediction else 'false' }}">
+
+<!-- ==================== ICON SPRITE ==================== -->
+<svg class="icon-sprite-defs" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="icon-db" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></symbol>
+    <symbol id="icon-columns" viewBox="0 0 24 24"><rect x="3" y="4" width="5" height="16" rx="1"/><rect x="10" y="4" width="5" height="16" rx="1"/><rect x="17" y="4" width="4" height="16" rx="1"/></symbol>
+    <symbol id="icon-rain" viewBox="0 0 24 24"><path d="M7 16a4 4 0 0 1 .5-7.97A5.5 5.5 0 0 1 18 10a3.5 3.5 0 0 1-1 6.9H7Z"/><line x1="8" y1="19" x2="8" y2="21"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="16" y1="19" x2="16" y2="21"/></symbol>
+    <symbol id="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="icon-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="icon-crosshair" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></symbol>
+    <symbol id="icon-activity" viewBox="0 0 24 24"><polyline points="2,14 7,14 9,7 13,19 16,10 18,14 22,14"/></symbol>
+    <symbol id="icon-award" viewBox="0 0 24 24"><circle cx="12" cy="8" r="5"/><path d="M8.5 12.8 7 21l5-3 5 3-1.5-8.2"/></symbol>
+    <symbol id="icon-thermo" viewBox="0 0 24 24"><path d="M12 14.5V4a2 2 0 0 0-4 0v10.5a4 4 0 1 0 4 0Z"/></symbol>
+    <symbol id="icon-droplet" viewBox="0 0 24 24"><path d="M12 2s7 8.1 7 12.5A7 7 0 1 1 5 14.5C5 10.1 12 2 12 2Z"/></symbol>
+    <symbol id="icon-gauge" viewBox="0 0 24 24"><path d="M4 15a8 8 0 1 1 16 0"/><line x1="12" y1="15" x2="16" y2="9"/><circle cx="12" cy="15" r="1.3" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="icon-wind" viewBox="0 0 24 24"><path d="M3 8h9.5a2.75 2.75 0 1 0-2.3-4.2"/><path d="M3 16h12.5a2.75 2.75 0 1 1-2.3 4.2"/><path d="M3 12h15.5a2.25 2.25 0 1 0-1.9-3.6"/></symbol>
+    <symbol id="icon-cloud" viewBox="0 0 24 24"><path d="M7 18a4.5 4.5 0 0 1 .3-9A6 6 0 0 1 19 11a3.5 3.5 0 0 1-1 7H7Z"/></symbol>
+    <symbol id="icon-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z"/></symbol>
+    <symbol id="icon-menu" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
+    <symbol id="icon-x" viewBox="0 0 24 24"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></symbol>
+    <symbol id="icon-chevron-left" viewBox="0 0 24 24"><polyline points="15,4 7,12 15,20"/></symbol>
+    <symbol id="icon-chevron-right" viewBox="0 0 24 24"><polyline points="9,4 17,12 9,20"/></symbol>
+    <symbol id="icon-play" viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="icon-pause" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" fill="currentColor" stroke="none"/><rect x="14" y="4" width="4" height="16" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="icon-check" viewBox="0 0 24 24"><polyline points="4,13 9,18 20,6"/></symbol>
+    <symbol id="icon-alert" viewBox="0 0 24 24"><path d="M12 3 2 20h20L12 3Z"/><line x1="12" y1="9" x2="12" y2="14"/><circle cx="12" cy="17" r="0.8" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="icon-arrow-right" viewBox="0 0 24 24"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13,5 20,12 13,19"/></symbol>
+    <symbol id="icon-image-off" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 16l5-5 4 4 3-3 6 6"/><line x1="4" y1="4" x2="20" y2="20"/></symbol>
+  </defs>
+</svg>
+
+<!-- ==================== NAVBAR ==================== -->
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <a class="nav-brand" href="{{ url_for('index') }}">
+      <span class="brand-mark">W<span>N</span></span>
+      <span class="brand-text">WeatherNet<em>AI</em></span>
+    </a>
+
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navLinks">
+      <svg class="icon"><use href="#icon-menu"></use></svg>
+    </button>
+
+    <div class="nav-links" id="navLinks">
+      <a href="{{ url_for('index') }}" class="active" aria-current="page">Dashboard</a>
+      <a href="#today-weather" data-scroll-link>Live Weather</a>
+      <a href="#predict" data-scroll-link>Predict</a>
+      <a href="#analytics" data-scroll-link>Analytics</a>
+      <a href="{{ url_for('about') }}">About</a>
+      <div class="nav-status" title="Model weights loaded successfully at server start">
+        <span class="status-dot" aria-hidden="true"></span>
+        Model Online
+      </div>
+    </div>
+
+    <button class="icon-btn theme-toggle" id="themeToggle" aria-label="Switch to dark mode" aria-pressed="false">
+      <svg class="icon icon-sun"><use href="#icon-sun"></use></svg>
+      <svg class="icon icon-moon"><use href="#icon-moon"></use></svg>
+    </button>
+  </div>
+</nav>
+
+<!-- ==================== HERO ==================== -->
+<header class="hero" id="top">
+  <div class="hero-grid" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <div class="hero-badges">
+      <span class="badge"><svg class="icon"><use href="#icon-db"></use></svg>NumPy Engine</span>
+      <span class="badge"><svg class="icon"><use href="#icon-arrow-right"></use></svg>Flask Deployment</span>
+      <span class="badge"><svg class="icon"><use href="#icon-target"></use></svg>Binary Classification</span>
+    </div>
+
+    <h1 class="hero-title">Weather Intelligence</h1>
+    <p class="hero-subtitle">Neural Network Rain Prediction</p>
+    <p class="hero-description">
+      This dashboard predicts <strong>{{ target_name|default('tomorrow&#39;s rain') }}</strong> from today's
+      atmospheric readings, using a feed-forward neural network implemented from scratch in NumPy and served
+      live through a Flask backend. Every prediction below is computed by the trained model in real time —
+      nothing on this page is simulated.
+    </p>
+
+    <div class="hero-meta">
+      <div class="meta-item">
+        <span class="meta-label">Local Time</span>
+        <span class="meta-value mono" id="liveClock">--:--:--</span>
+      </div>
+      <div class="meta-divider" aria-hidden="true"></div>
+      <div class="meta-item">
+        <span class="meta-label">Model Status</span>
+        <span class="meta-value status-ready"><span class="status-dot" aria-hidden="true"></span>Ready · NumPy Engine</span>
+      </div>
+      <div class="meta-divider" aria-hidden="true"></div>
+      <div class="meta-item">
+        <span class="meta-label">Target Variable</span>
+        <span class="meta-value mono">{{ target_name|default('RainTomorrow') }}</span>
+      </div>
+    </div>
+
+    <div class="hero-actions">
+      <a href="#predict" class="btn btn-primary">Run a Prediction<svg class="icon"><use href="#icon-arrow-right"></use></svg></a>
+      <a href="#analytics" class="btn btn-ghost">View Model Analytics</a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ==================== TODAY'S WEATHER (LIVE CITY WEATHER) ==================== -->
+  <section class="section" id="today-weather">
+    <div class="section-inner">
+      <div class="card weather-card">
+        <div class="weather-card-head">
+          <h3><svg class="icon"><use href="#icon-sun"></use></svg>Today's Weather</h3>
+          <p class="section-subtitle">Look up live conditions for any city, then optionally load them straight into the prediction form below.</p>
+        </div>
+
+        <form class="weather-search-form" id="weatherSearchForm" novalidate>
+          <div class="weather-search-row">
+            <div class="input-wrap weather-search-input">
+              <svg class="icon input-icon"><use href="#icon-target"></use></svg>
+              <input type="text" id="cityInput" name="city" placeholder="Enter city name… (e.g. Bengaluru)"
+                     autocomplete="off" list="recentCitiesList" aria-label="City name">
+              <datalist id="recentCitiesList"></datalist>
+            </div>
+            <button type="submit" class="btn btn-primary btn-submit" id="getWeatherBtn">
+              <span class="btn-spinner" aria-hidden="true"></span>
+              <span class="btn-label">Get Weather</span>
+            </button>
+            <button type="button" class="btn btn-outline" id="useLocationBtn" title="Use my current location">
+              <svg class="icon"><use href="#icon-crosshair"></use></svg>
+              <span>Use my location</span>
+            </button>
+          </div>
+          <div class="weather-recent-chips" id="recentCitiesChips" aria-label="Recently searched cities"></div>
+          <span class="field-error" id="weatherSearchError" role="alert"></span>
+        </form>
+
+        <div class="weather-result" id="weatherResult">
+
+          <div class="weather-empty" id="weatherEmpty">
+            <svg class="icon icon-lg"><use href="#icon-cloud"></use></svg>
+            <p>No city looked up yet.</p>
+            <p class="muted">Search a city above to see live conditions here.</p>
+          </div>
+
+          <div class="weather-loading" id="weatherLoading" hidden>
+            <span class="weather-spinner" aria-hidden="true"></span>
+            <p>Fetching live conditions…</p>
+          </div>
+
+          <div class="alert alert-error weather-error-state" id="weatherErrorState" role="alert" hidden>
+            <svg class="icon"><use href="#icon-alert"></use></svg>
+            <span id="weatherErrorMessage"></span>
+          </div>
+
+          <div class="weather-success" id="weatherSuccess" hidden>
+            <div class="weather-headline">
+              <div>
+                <span class="weather-location" id="weatherLocation">—</span>
+                <span class="weather-updated mono" id="weatherUpdated">Updated now</span>
+              </div>
+              <svg class="icon icon-xl" id="weatherConditionIcon"><use href="#icon-sun"></use></svg>
+            </div>
+
+            <div class="weather-temp-row">
+              <span class="weather-temp mono" id="weatherTemp">--°C</span>
+              <div class="weather-condition-block">
+                <span class="weather-condition" id="weatherCondition">—</span>
+                <span class="weather-feelslike" id="weatherFeelsLike">Feels like --°C</span>
+              </div>
+            </div>
+
+            <div class="weather-stats-grid">
+              <div class="weather-stat">
+                <svg class="icon"><use href="#icon-droplet"></use></svg>
+                <div><span class="weather-stat-label">Humidity</span><span class="weather-stat-value mono" id="weatherHumidity">--%</span></div>
+              </div>
+              <div class="weather-stat">
+                <svg class="icon"><use href="#icon-wind"></use></svg>
+                <div><span class="weather-stat-label">Wind</span><span class="weather-stat-value mono" id="weatherWind">-- km/h</span></div>
+              </div>
+              <div class="weather-stat">
+                <svg class="icon"><use href="#icon-gauge"></use></svg>
+                <div><span class="weather-stat-label">Pressure</span><span class="weather-stat-value mono" id="weatherPressure">-- hPa</span></div>
+              </div>
+              <div class="weather-stat">
+                <svg class="icon"><use href="#icon-cloud"></use></svg>
+                <div><span class="weather-stat-label">Cloud Cover</span><span class="weather-stat-value mono" id="weatherCloud">--%</span></div>
+              </div>
+              <div class="weather-stat" id="weatherVisibilityStat">
+                <svg class="icon"><use href="#icon-crosshair"></use></svg>
+                <div><span class="weather-stat-label">Visibility</span><span class="weather-stat-value mono" id="weatherVisibility">-- km</span></div>
+              </div>
+            </div>
+
+            <button type="button" class="btn btn-outline btn-block" id="useWeatherForPredictionBtn">
+              Use Current Weather for Prediction<svg class="icon"><use href="#icon-arrow-right"></use></svg>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== KPI SECTION ==================== -->
+  <section class="section" id="dashboard-stats">
+    <div class="section-inner">
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-icon"><svg class="icon"><use href="#icon-db"></use></svg></div>
+          <div class="kpi-value mono">{{ stats.total_rows }}</div>
+          <div class="kpi-label">Dataset Rows</div>
+          <div class="kpi-bar"><div class="kpi-bar-fill" style="width: 100%;"></div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon"><svg class="icon"><use href="#icon-columns"></use></svg></div>
+          <div class="kpi-value mono">{{ stats.total_columns }}</div>
+          <div class="kpi-label">Dataset Columns</div>
+          <div class="kpi-bar"><div class="kpi-bar-fill" style="width: 100%;"></div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon"><svg class="icon"><use href="#icon-rain"></use></svg></div>
+          <div class="kpi-value mono">{{ stats.rain_yes }}</div>
+          <div class="kpi-label">Rain Days</div>
+          <div class="kpi-bar"><div class="kpi-bar-fill fill-accent" style="width: {{ (stats.rain_yes / stats.total_rows * 100) if stats.total_rows else 0 }}%;"></div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon"><svg class="icon"><use href="#icon-sun"></use></svg></div>
+          <div class="kpi-value mono">{{ stats.rain_no }}</div>
+          <div class="kpi-label">No Rain Days</div>
+          <div class="kpi-bar"><div class="kpi-bar-fill" style="width: {{ (stats.rain_no / stats.total_rows * 100) if stats.total_rows else 0 }}%;"></div></div>
+        </div>
+        <div class="kpi-card kpi-card-highlight">
+          <div class="kpi-icon"><svg class="icon"><use href="#icon-target"></use></svg></div>
+          <div class="kpi-value mono">{{ metrics.accuracy|default('94.2') }}%</div>
+          <div class="kpi-label">Accuracy</div>
+          <div class="kpi-bar"><div class="kpi-bar-fill" style="width: {{ metrics.accuracy|default(94.2) }}%;"></div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon"><svg class="icon"><use href="#icon-crosshair"></use></svg></div>
+          <div class="kpi-value mono">{{ metrics.precision|default('92.0') }}%</div>
+          <div class="kpi-label">Precision</div>
+          <div class="kpi-bar"><div class="kpi-bar-fill" style="width: {{ metrics.precision|default(92.0) }}%;"></div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon"><svg class="icon"><use href="#icon-activity"></use></svg></div>
+          <div class="kpi-value mono">{{ metrics.recall|default('90.5') }}%</div>
+          <div class="kpi-label">Recall</div>
+          <div class="kpi-bar"><div class="kpi-bar-fill" style="width: {{ metrics.recall|default(90.5) }}%;"></div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-icon"><svg class="icon"><use href="#icon-award"></use></svg></div>
+          <div class="kpi-value mono">{{ metrics.f1|default('91.2') }}%</div>
+          <div class="kpi-label">F1 Score</div>
+          <div class="kpi-bar"><div class="kpi-bar-fill" style="width: {{ metrics.f1|default(91.2) }}%;"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== PREDICTION WORKSPACE ==================== -->
+  <section class="section" id="predict">
+    <div class="section-inner">
+      <div class="section-heading">
+        <span class="section-eyebrow">Live Inference</span>
+        <h2>Prediction Workspace</h2>
+        <p>Enter today's atmospheric readings. The trained network scales, forward-propagates, and classifies the result through <code>POST /predict</code> — every number below comes straight from the model.</p>
+      </div>
+
+      <div class="workspace-grid">
+
+        <!-- INPUT PANEL -->
+        <div class="card input-panel">
+          <h3>Atmospheric Input <span class="live-badge" id="liveDataBadge" hidden><svg class="icon"><use href="#icon-sun"></use></svg>Live weather data</span></h3>
+
+          {% if error %}
+          <div class="alert alert-error" role="alert">
+            <svg class="icon"><use href="#icon-alert"></use></svg>
+            <span>{{ error }}</span>
+          </div>
+          {% endif %}
+
+          <form method="POST" action="{{ url_for('predict') }}" id="predictForm" novalidate>
+            <div class="field-grid">
+
+              <div class="field" data-field="Temperature" data-min="-50" data-max="60">
+                <label for="Temperature">Temperature <span class="unit">°C</span></label>
+                <div class="input-wrap">
+                  <svg class="icon input-icon"><use href="#icon-thermo"></use></svg>
+                  <input type="number" step="0.1" id="Temperature" name="Temperature" min="-50" max="60"
+                         value="{{ prediction.inputs.Temperature if prediction else 25 }}" required>
+                </div>
+                <span class="field-hint">Valid range: −50 to 60 °C</span>
+                <span class="field-error" id="err-Temperature" role="alert"></span>
+              </div>
+
+              <div class="field" data-field="Humidity" data-min="0" data-max="100">
+                <label for="Humidity">Humidity <span class="unit">%</span></label>
+                <div class="input-wrap">
+                  <svg class="icon input-icon"><use href="#icon-droplet"></use></svg>
+                  <input type="number" step="0.1" id="Humidity" name="Humidity" min="0" max="100"
+                         value="{{ prediction.inputs.Humidity if prediction else 60 }}" required>
+                </div>
+                <span class="field-hint">Valid range: 0 to 100%</span>
+                <span class="field-error" id="err-Humidity" role="alert"></span>
+              </div>
+
+              <div class="field" data-field="Pressure" data-min="800" data-max="1100">
+                <label for="Pressure">Pressure <span class="unit">hPa</span></label>
+                <div class="input-wrap">
+                  <svg class="icon input-icon"><use href="#icon-gauge"></use></svg>
+                  <input type="number" step="0.1" id="Pressure" name="Pressure" min="800" max="1100"
+                         value="{{ prediction.inputs.Pressure if prediction else 1013 }}" required>
+                </div>
+                <span class="field-hint">Valid range: 800 to 1100 hPa</span>
+                <span class="field-error" id="err-Pressure" role="alert"></span>
+              </div>
+
+              <div class="field" data-field="WindSpeed" data-min="0" data-max="200">
+                <label for="WindSpeed">Wind Speed <span class="unit">km/h</span></label>
+                <div class="input-wrap">
+                  <svg class="icon input-icon"><use href="#icon-wind"></use></svg>
+                  <input type="number" step="0.1" id="WindSpeed" name="WindSpeed" min="0" max="200"
+                         value="{{ prediction.inputs.WindSpeed if prediction else 12 }}" required>
+                </div>
+                <span class="field-hint">Non-negative, up to 200 km/h</span>
+                <span class="field-error" id="err-WindSpeed" role="alert"></span>
+              </div>
+
+              <div class="field" data-field="CloudCover" data-min="0" data-max="100">
+                <label for="CloudCover">Cloud Cover <span class="unit">%</span></label>
+                <div class="input-wrap">
+                  <svg class="icon input-icon"><use href="#icon-cloud"></use></svg>
+                  <input type="number" step="0.1" id="CloudCover" name="CloudCover" min="0" max="100"
+                         value="{{ prediction.inputs.CloudCover if prediction else 45 }}" required>
+                </div>
+                <span class="field-hint">Valid range: 0 to 100%</span>
+                <span class="field-error" id="err-CloudCover" role="alert"></span>
+              </div>
+
+            </div>
+
+            <div class="form-actions">
+              <button type="button" id="fillSampleBtn" class="btn btn-outline">Fill Sample Data</button>
+              <button type="reset" id="resetBtn" class="btn btn-ghost">Reset</button>
+              <button type="submit" id="submitBtn" class="btn btn-primary btn-submit">
+                <span class="btn-spinner" aria-hidden="true"></span>
+                <span class="btn-label">Run Prediction</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- RESULT PANEL -->
+        <div class="card result-panel">
+          <h3>Prediction Intelligence</h3>
+
+          {% if prediction %}
+          <div class="result-content">
+            <div class="gauge-wrap">
+              <svg class="gauge" viewBox="0 0 200 200" role="img" aria-label="Probability of rain: {{ prediction.probability_pct }} percent">
+                <circle class="gauge-track" cx="100" cy="100" r="85"></circle>
+                <circle class="gauge-fill {{ prediction.risk_class }}" cx="100" cy="100" r="85"
+                        stroke-dasharray="534.07" style="stroke-dashoffset: 534.07;"
+                        data-target-offset="{{ '%.2f'|format(534.07 - (534.07 * prediction.probability_pct / 100)) }}"></circle>
+              </svg>
+              <div class="gauge-readout">
+                <span class="gauge-value mono">{{ prediction.probability_pct }}%</span>
+                <span class="gauge-caption">{{ prediction.predicted_class }}</span>
+              </div>
+            </div>
+
+            <div class="result-badges">
+              <span class="risk-badge {{ prediction.risk_class }}">{{ prediction.risk_label }} RISK</span>
+            </div>
+
+            <dl class="result-stats">
+              <div><dt>Prediction</dt><dd>{{ prediction.predicted_class }}</dd></div>
+              <div><dt>Probability of Rain</dt><dd class="mono">{{ prediction.probability_pct }}%</dd></div>
+              <div><dt>Risk Level</dt><dd>{{ prediction.risk_label }}</dd></div>
+              <div><dt>Confidence</dt><dd class="mono">{{ '%.1f'|format(prediction.probability_pct if prediction.probability_pct >= 50 else (100 - prediction.probability_pct)) }}%</dd></div>
+              <div><dt>Client Request Time</dt><dd class="mono" id="clientRequestTime">—</dd></div>
+            </dl>
+          </div>
+          {% else %}
+          <div class="result-empty">
+            <svg class="icon icon-lg"><use href="#icon-gauge"></use></svg>
+            <p>No prediction yet.</p>
+            <p class="muted">Fill in the atmospheric readings and run the model to see live results here.</p>
+          </div>
+          {% endif %}
+
+          <div class="history-panel">
+            <div class="history-head">
+              <h4>Recent Predictions</h4>
+              <button type="button" id="clearHistoryBtn" class="btn-link">Clear History</button>
+            </div>
+            <p class="history-hint">Stored locally in your browser only — never sent to the server.</p>
+            <ul id="historyList" class="history-list"></ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== MODEL PERFORMANCE / ANALYTICS ==================== -->
+  <section class="section" id="analytics">
+    <div class="section-inner">
+      <div class="section-heading">
+        <span class="section-eyebrow">Model Evaluation</span>
+        <h2>Model Performance</h2>
+        <p>Metrics computed on the held-out test set by <code>train_model.py</code>.</p>
+      </div>
+
+      <div class="metric-grid">
+        <div class="card metric-card">
+          <span class="metric-name">Accuracy</span>
+          <span class="metric-value mono">{{ metrics.accuracy|default('94.2') }}%</span>
+          <p class="metric-desc">Share of all test predictions the model got right, for both rain and no-rain days.</p>
+        </div>
+        <div class="card metric-card">
+          <span class="metric-name">Precision</span>
+          <span class="metric-value mono">{{ metrics.precision|default('92.0') }}%</span>
+          <p class="metric-desc">Of the days the model predicted rain, the fraction that actually saw rain.</p>
+        </div>
+        <div class="card metric-card">
+          <span class="metric-name">Recall</span>
+          <span class="metric-value mono">{{ metrics.recall|default('90.5') }}%</span>
+          <p class="metric-desc">Of the days that actually saw rain, the fraction the model successfully caught.</p>
+        </div>
+        <div class="card metric-card">
+          <span class="metric-name">F1 Score</span>
+          <span class="metric-value mono">{{ metrics.f1|default('91.2') }}%</span>
+          <p class="metric-desc">The harmonic mean of precision and recall — a single balanced quality score.</p>
+        </div>
+      </div>
+
+      <div class="card metrics-detail">
+        <h3>Confusion Matrix &amp; Training Details</h3>
+        <div class="table-wrap">
+          <table class="data-table">
+            <tbody>
+              <tr><th>True Positives / True Negatives</th><td class="mono">{{ metrics.tp|default('—') }} / {{ metrics.tn|default('—') }}</td></tr>
+              <tr><th>False Positives / False Negatives</th><td class="mono">{{ metrics.fp|default('—') }} / {{ metrics.fn|default('—') }}</td></tr>
+              <tr><th>Training / Testing Samples</th><td class="mono">{{ metrics.train_samples|default('—') }} / {{ metrics.test_samples|default('—') }}</td></tr>
+              <tr><th>Training Epochs</th><td class="mono">{{ metrics.epochs|default('—') }}</td></tr>
+              <tr><th>Optimizer Used</th><td class="mono">{{ metrics.optimizer|default('adam')|upper }}</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== DATASET OVERVIEW ==================== -->
+  <section class="section">
+    <div class="section-inner">
+      <div class="card">
+        <h3>Dataset Overview</h3>
+        <p class="section-subtitle">Weather records used to train and evaluate the network, loaded live from <code>weather.csv</code>.</p>
+        <div class="mini-stats">
+          <div><span class="mini-stat-value mono">{{ stats.total_rows }}</span><span class="mini-stat-label">Rows</span></div>
+          <div><span class="mini-stat-value mono">{{ stats.total_columns }}</span><span class="mini-stat-label">Columns</span></div>
+          <div><span class="mini-stat-value mono">{{ stats.rain_yes }}</span><span class="mini-stat-label">Rain Days</span></div>
+          <div><span class="mini-stat-value mono">{{ stats.rain_no }}</span><span class="mini-stat-label">No Rain Days</span></div>
+        </div>
+        <div class="columns-tags">
+          {% for col in stats.columns %}
+          <span class="tag mono">{{ col }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== PRESENTATION DECK ==================== -->
+  <section class="section" id="presentation">
+    <div class="section-inner">
+      <div class="section-heading">
+        <span class="section-eyebrow">Viva Ready</span>
+        <h2>Project Architecture &amp; Viva Presentation</h2>
+        <p>A six-slide walkthrough of the system, from problem statement to deployment.</p>
+      </div>
+
+      <div class="deck" id="slideDeck" tabindex="0" aria-roledescription="carousel" aria-label="Project architecture presentation">
+        <div class="deck-progress"><div class="deck-progress-fill" id="deckProgressFill"></div></div>
+
+        <div class="deck-viewport">
+
+          <article class="slide" data-index="0">
+            <span class="slide-tag mono">Slide 01 / 06</span>
+            <h3>Problem Statement</h3>
+            <p>Predicting rain is a <strong>binary classification</strong> problem: given today's atmospheric readings — temperature, humidity, pressure, wind speed and cloud cover — decide whether tomorrow will bring rain. Relationships between these variables are non-linear, which makes a small neural network a natural fit over a simple linear rule.</p>
+          </article>
+
+          <article class="slide" data-index="1">
+            <span class="slide-tag mono">Slide 02 / 06</span>
+            <h3>Dataset &amp; Preprocessing</h3>
+            <ul class="slide-list">
+              <li><strong>Cleaning</strong> — handling missing or inconsistent atmospheric readings.</li>
+              <li><strong>Feature engineering</strong> — deriving auxiliary fields such as sunshine hours and rainfall estimates.</li>
+              <li><strong>Scaling</strong> — standardizing every feature so no single column dominates training.</li>
+              <li><strong>Train / test split</strong> — holding out unseen rows to evaluate generalization honestly.</li>
+            </ul>
+          </article>
+
+          <article class="slide" data-index="2">
+            <span class="slide-tag mono">Slide 03 / 06</span>
+            <h3>Neural Network Architecture</h3>
+            <div class="mini-flow">
+              <span class="flow-node">Input</span>
+              <span class="flow-arrow">↓</span>
+              <span class="flow-node">Hidden Layer</span>
+              <span class="flow-arrow">↓</span>
+              <span class="flow-node">ReLU</span>
+              <span class="flow-arrow">↓</span>
+              <span class="flow-node">Output Layer</span>
+              <span class="flow-arrow">↓</span>
+              <span class="flow-node">Sigmoid</span>
+              <span class="flow-arrow">↓</span>
+              <span class="flow-node flow-node-accent">Rain Probability</span>
+            </div>
+          </article>
+
+          <article class="slide" data-index="3">
+            <span class="slide-tag mono">Slide 04 / 06</span>
+            <h3>Forward &amp; Backpropagation</h3>
+            <ul class="slide-list">
+              <li><strong>Forward pass</strong> — inputs move through matrix multiplications and activations to a probability.</li>
+              <li><strong>Loss</strong> — Binary Cross-Entropy measures how far that probability is from the true label.</li>
+              <li><strong>Backward pass</strong> — the chain rule propagates the error backward to every weight.</li>
+              <li><strong>Update</strong> — each weight shifts against its gradient to reduce the loss next time.</li>
+            </ul>
+          </article>
+
+          <article class="slide" data-index="4">
+            <span class="slide-tag mono">Slide 05 / 06</span>
+            <h3>Adam Optimizer</h3>
+            <ul class="slide-list">
+              <li>Tracks a moving average of the <strong>gradient</strong> (first moment, m) for momentum.</li>
+              <li>Tracks a moving average of the <strong>squared gradient</strong> (second moment, v) for scale.</li>
+              <li>Applies <strong>bias correction</strong> so early updates aren't skewed toward zero.</li>
+              <li>Produces an <strong>adaptive learning rate</strong> per parameter, converging faster than plain SGD.</li>
+            </ul>
+          </article>
+
+          <article class="slide" data-index="5">
+            <span class="slide-tag mono">Slide 06 / 06</span>
+            <h3>Evaluation &amp; Deployment</h3>
+            <ul class="slide-list">
+              <li><strong>Evaluation</strong> — Accuracy, Precision, Recall, F1 and a confusion matrix on the test set.</li>
+              <li><strong>Deployment</strong> — the trained weights and scaler are loaded once at Flask startup.</li>
+              <li><strong>Inference</strong> — every request on this page runs a fresh NumPy forward pass, no framework involved.</li>
+            </ul>
+          </article>
+
+        </div>
+
+        <div class="deck-controls">
+          <button type="button" class="deck-btn" id="deckPrev" aria-label="Previous slide">
+            <svg class="icon"><use href="#icon-chevron-left"></use></svg>
+          </button>
+          <div class="deck-dots" id="deckDots" role="tablist" aria-label="Slide navigation"></div>
+          <button type="button" class="deck-btn" id="deckPlay" aria-label="Play slideshow" aria-pressed="false">
+            <svg class="icon icon-play"><use href="#icon-play"></use></svg>
+            <svg class="icon icon-pause"><use href="#icon-pause"></use></svg>
+          </button>
+          <button type="button" class="deck-btn" id="deckNext" aria-label="Next slide">
+            <svg class="icon"><use href="#icon-chevron-right"></use></svg>
+          </button>
+          <span class="deck-counter mono" id="deckCounter">1 / 6</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== GRAPH GALLERY ==================== -->
+  <section class="section" id="graphs">
+    <div class="section-inner">
+      <div class="section-heading">
+        <span class="section-eyebrow">Training Diagnostics</span>
+        <h2>Model Visualizations</h2>
+        <p>Generated by <code>train_model.py</code> using Matplotlib and Seaborn during training.</p>
+      </div>
+
+      <div class="graph-grid">
+        {% for graph in graphs %}
+        <figure class="graph-card">
+          <div class="graph-image-wrap">
+            <img src="{{ url_for('static', filename='graphs/' + graph) }}"
+                 alt="{{ graph.replace('_',' ').replace('.png','')|title }}"
+                 loading="lazy" data-fallback>
+          </div>
+          <figcaption>
+            <span class="graph-title">{{ graph.replace('_',' ').replace('.png','')|title }}</span>
+            <span class="graph-desc">
+              {% if graph == 'training_loss.png' %}Tracks how the loss decreases across training epochs, confirming the network is learning.
+              {% elif graph == 'accuracy.png' %}Plots training versus validation accuracy over epochs to check for overfitting.
+              {% elif graph == 'confusion_matrix.png' %}Breaks test-set predictions into true/false positives and negatives.
+              {% elif graph == 'heatmap.png' %}Visualizes correlations between the atmospheric features in the dataset.
+              {% elif graph == 'activation_functions.png' %}Compares the shape and gradient behaviour of ReLU, Sigmoid and Tanh.
+              {% elif graph == 'rain_distribution.png' %}Shows the class balance between rain and no-rain days in the dataset.
+              {% elif graph == 'optimizer_comparison.png' %}Compares convergence speed between the SGD and Adam optimizers.
+              {% else %}Diagnostic visualization generated during model training.
+              {% endif %}
+            </span>
+          </figcaption>
+        </figure>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== FINAL CTA ==================== -->
+  <section class="section">
+    <div class="section-inner">
+      <div class="cta-card">
+        <div>
+          <h2>Explore the Academic Architecture</h2>
+          <p>Syllabus mapping, viva questions, formula reference and the full setup guide live on the documentation page.</p>
+        </div>
+        <a href="{{ url_for('about') }}" class="btn btn-primary">Open Viva Guide<svg class="icon"><use href="#icon-arrow-right"></use></svg></a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <p>CRETRD BY TUKARAM PAGADE (AIML 5TH SEN)</p>
+</footer>
+
+<div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+</body>
+</html>

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>Weather Prediction Neural Network — Presentation</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-active-slide="1">
+
+  <!-- Loader -->
+  <div id="loader">
+    <div class="loader-mark">NN&#8209;WX</div>
+    <div class="loader-track"><div class="loader-bar"></div></div>
+    <div class="loader-text">CALIBRATING INSTRUMENTS…</div>
+  </div>
+
+  <!-- Ambient 3D background, persists across all slides -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- Signature HUD chrome -->
+  <div class="hud-frame" aria-hidden="true">
+    <span class="hud-corner hud-corner--tl"></span>
+    <span class="hud-corner hud-corner--tr"></span>
+    <span class="hud-corner hud-corner--bl"></span>
+    <span class="hud-corner hud-corner--br"></span>
+  </div>
+  <div class="hud-strip hud-strip--left" aria-hidden="true">
+    <span class="hud-dot"></span> NN&#8209;WX SYS &nbsp;/&nbsp; MODEL: FEEDFORWARD&#8209;NN &nbsp;/&nbsp; MODE: SIMULATED
+  </div>
+  <div class="hud-strip hud-strip--right" aria-hidden="true">
+    <span id="hud-slide-name">TITLE</span>
+  </div>
+
+  <button id="fullscreen-btn" class="hud-btn" type="button" aria-label="Toggle fullscreen presentation">
+    <span class="hud-btn-icon">&#9974;</span> FULLSCREEN
+  </button>
+
+  <div id="cursor-glow" aria-hidden="true"></div>
+
+  <!-- Projected 3D-node labels live here (never inside a transformed/animated
+       ancestor, so position:fixed stays viewport-relative) -->
+  <div id="label-layer" aria-hidden="true">
+    <div class="node-label" data-node="temperature" data-slide="1"><span class="node-ico">&#127777;</span>Temperature</div>
+    <div class="node-label" data-node="humidity" data-slide="1"><span class="node-ico">&#128167;</span>Humidity</div>
+    <div class="node-label" data-node="pressure" data-slide="1"><span class="node-ico">&#9201;</span>Pressure</div>
+    <div class="node-label" data-node="wind" data-slide="1"><span class="node-ico">&#128168;</span>Wind</div>
+    <div class="node-label" data-node="cloud" data-slide="1"><span class="node-ico">&#9729;</span>Cloud Cover</div>
+
+    <div class="net-input-label" data-node="0" data-slide="4">Temperature</div>
+    <div class="net-input-label" data-node="1" data-slide="4">Humidity</div>
+    <div class="net-input-label" data-node="2" data-slide="4">Pressure</div>
+    <div class="net-input-label" data-node="3" data-slide="4">Wind Speed</div>
+    <div class="net-input-label" data-node="4" data-slide="4">Cloud Cover</div>
+  </div>
+
+  <!-- ============ DECK ============ -->
+  <main id="deck">
+
+    <!-- SLIDE 1 — TITLE -->
+    <section class="slide" id="slide-1" data-slide="1" aria-label="Title">
+      <div class="slide-inner slide1-grid">
+        <div class="slide1-text">
+          <p class="eyebrow" data-reveal="0">Machine Learning Project</p>
+          <h1 class="hero-title">
+            <span class="line" data-reveal="1">WEATHER PREDICTION</span>
+            <span class="line line--accent" data-reveal="2">NEURAL NETWORK</span>
+          </h1>
+          <p class="hero-subtitle" data-reveal="3">Predicting Tomorrow's Rain Using Machine Learning</p>
+          <button class="btn-primary" id="start-btn" type="button" data-reveal="4">
+            START PRESENTATION <span class="arrow">→</span>
+          </button>
+        </div>
+        <div class="slide1-visual">
+          <canvas id="hero-canvas"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 2 — PROBLEM -->
+    <section class="slide" id="slide-2" data-slide="2" aria-label="The Problem">
+      <div class="slide-inner slide2-layout">
+        <p class="eyebrow" data-reveal="0">The Problem</p>
+        <h2 class="statement" data-reveal="1">Can we predict tomorrow's rain from today's weather conditions?</h2>
+
+        <div class="orbit" data-reveal="2">
+          <div class="orbit-core">
+            <span class="orbit-core-ring"></span>
+            <span class="orbit-core-glow"></span>
+          </div>
+          <div class="param-node param-node--1"><span class="flow-dot"></span><span class="param-ico">&#127777;</span><span class="param-label">Temperature</span></div>
+          <div class="param-node param-node--2"><span class="flow-dot"></span><span class="param-ico">&#128167;</span><span class="param-label">Humidity</span></div>
+          <div class="param-node param-node--3"><span class="flow-dot"></span><span class="param-ico">&#9201;</span><span class="param-label">Pressure</span></div>
+          <div class="param-node param-node--4"><span class="flow-dot"></span><span class="param-ico">&#128168;</span><span class="param-label">Wind Speed</span></div>
+          <div class="param-node param-node--5"><span class="flow-dot"></span><span class="param-ico">&#9729;</span><span class="param-label">Cloud Cover</span></div>
+        </div>
+
+        <div class="mini-flow" data-reveal="3">
+          <span class="mini-flow-step is-lit">INPUT</span>
+          <span class="mini-flow-arrow">&#8594;</span>
+          <span class="mini-flow-step">ANALYSIS</span>
+          <span class="mini-flow-arrow">&#8594;</span>
+          <span class="mini-flow-step">PREDICTION</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 3 — WORKFLOW -->
+    <section class="slide" id="slide-3" data-slide="3" aria-label="System Workflow">
+      <div class="slide-inner slide3-layout">
+        <p class="eyebrow" data-reveal="0">System Workflow</p>
+        <h2 class="slide-title" data-reveal="1">How The System Works</h2>
+
+        <div class="pipeline-wrap" data-reveal="2">
+          <div class="pipeline-track" id="pipeline-track">
+            <div class="data-particle" id="data-particle"></div>
+
+            <div class="stage" data-stage="0">
+              <div class="stage-icon">&#128225;</div>
+              <div class="stage-label">Weather Data</div>
+            </div>
+            <div class="pipe-seg"></div>
+            <div class="stage" data-stage="1">
+              <div class="stage-icon">&#129513;</div>
+              <div class="stage-label">Preprocessing</div>
+              <div class="stage-sub">Clean</div>
+            </div>
+            <div class="pipe-seg"></div>
+            <div class="stage" data-stage="2">
+              <div class="stage-icon">&#128202;</div>
+              <div class="stage-label">Feature Scaling</div>
+              <div class="stage-sub">Transform</div>
+            </div>
+            <div class="pipe-seg"></div>
+            <div class="stage" data-stage="3">
+              <div class="stage-icon">&#129504;</div>
+              <div class="stage-label">Neural Network</div>
+              <div class="stage-sub">Learn</div>
+            </div>
+            <div class="pipe-seg"></div>
+            <div class="stage" data-stage="4">
+              <div class="stage-icon">&#127783;&#65039;</div>
+              <div class="stage-label">Rain Probability</div>
+              <div class="stage-sub">Predict</div>
+            </div>
+            <div class="pipe-seg"></div>
+            <div class="stage" data-stage="5">
+              <div class="stage-icon">&#9878;&#65039;</div>
+              <div class="stage-label">Rain / No Rain</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 4 — NEURAL NETWORK -->
+    <section class="slide" id="slide-4" data-slide="4" aria-label="Inside the Neural Network">
+      <div class="slide-inner slide4-layout">
+        <p class="eyebrow" data-reveal="0">Model Architecture</p>
+        <h2 class="slide-title" data-reveal="1">Inside The Neural Network</h2>
+
+        <div class="network-wrap" data-reveal="2">
+          <canvas id="main-net-canvas"></canvas>
+
+          <div class="layer-label layer-label--input">
+            <span class="layer-label-title">Input Layer</span>
+          </div>
+          <div class="layer-label layer-label--hidden">
+            <span class="layer-label-title">Hidden Layer</span>
+            <span class="layer-label-sub">ReLU</span>
+          </div>
+          <div class="layer-label layer-label--output">
+            <span class="layer-label-title">Output Layer</span>
+            <span class="layer-label-sub">Sigmoid</span>
+          </div>
+          <div class="layer-label layer-label--result">Rain Probability</div>
+
+          <div class="formula-badge formula-badge--left">ReLU(x) = max(0, x)</div>
+          <div class="formula-badge formula-badge--right">Sigmoid(x) = 1 / (1 + e<sup>&minus;x</sup>)</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 5 — PREDICTION -->
+    <section class="slide" id="slide-5" data-slide="5" aria-label="From Weather to Prediction">
+      <div class="slide-inner slide5-layout">
+        <p class="eyebrow" data-reveal="0">Demo Walkthrough</p>
+        <h2 class="slide-title" data-reveal="1">From Weather To Prediction</h2>
+
+        <div class="predict-layout" data-reveal="2">
+          <div class="glass-card predict-inputs">
+            <div class="demo-tag">DEMO PREDICTION</div>
+            <div class="input-row"><span>Temperature</span><span class="mono">28°C</span></div>
+            <div class="input-row"><span>Humidity</span><span class="mono">75%</span></div>
+            <div class="input-row"><span>Pressure</span><span class="mono">1008 hPa</span></div>
+            <div class="input-row"><span>Wind Speed</span><span class="mono">14 km/h</span></div>
+            <div class="input-row"><span>Cloud Cover</span><span class="mono">82%</span></div>
+          </div>
+
+          <div class="glass-card predict-process" id="predict-process">
+            <div class="process-status" id="process-status">
+              <span id="process-status-text">ANALYSING</span><span class="dots"><span>.</span><span>.</span><span>.</span></span>
+            </div>
+
+            <div class="result-panel" id="result-panel">
+              <div class="gauge-wrap">
+                <svg class="gauge" viewBox="0 0 200 200" id="gauge-svg">
+                  <circle class="gauge-track" cx="100" cy="100" r="86"></circle>
+                  <circle class="gauge-fill" id="gauge-fill" cx="100" cy="100" r="86"></circle>
+                </svg>
+                <div class="gauge-readout">
+                  <span class="gauge-value"><span id="gauge-number">0</span>%</span>
+                  <span class="gauge-caption">Rain Probability</span>
+                </div>
+              </div>
+              <div class="risk-tag" id="risk-tag">HIGH RISK</div>
+              <div class="risk-line">Rain Tomorrow: <strong>YES</strong></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 6 — CONCLUSION -->
+    <section class="slide" id="slide-6" data-slide="6" aria-label="Result & Conclusion">
+      <div class="slide-inner slide6-layout">
+        <p class="eyebrow" data-reveal="0">Result &amp; Conclusion</p>
+        <h2 class="slide-title" data-reveal="1">From Data To A Decision</h2>
+
+        <div class="conclusion-grid" data-reveal="2">
+          <div class="point-card"><span class="point-num">01</span><span class="point-label">Weather Data</span></div>
+          <div class="point-card"><span class="point-num">02</span><span class="point-label">Neural Network</span></div>
+          <div class="point-card"><span class="point-num">03</span><span class="point-label">Rain Probability</span></div>
+          <div class="point-card"><span class="point-num">04</span><span class="point-label">Prediction</span></div>
+        </div>
+
+        <p class="conclusion-statement" data-reveal="3">Machine learning transforms atmospheric data into an understandable rain prediction.</p>
+
+        <button class="btn-primary" id="restart-btn" type="button" data-reveal="4">
+          RESTART PRESENTATION <span class="arrow">&#8635;</span>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============ NAVIGATION ============ -->
+  <nav id="nav-bar" aria-label="Presentation navigation">
+    <button id="prev-btn" class="nav-btn" type="button" aria-label="Previous slide">
+      <span class="nav-btn-arrow">&#8592;</span><span class="nav-btn-text">Previous</span>
+    </button>
+
+    <div class="nav-center">
+      <span class="nav-counter"><span id="counter-current">01</span><span class="nav-counter-sep">/</span><span id="counter-total">06</span></span>
+      <div class="nav-dots" id="nav-dots"></div>
+    </div>
+
+    <button id="next-btn" class="nav-btn" type="button" aria-label="Next slide">
+      <span class="nav-btn-text">Next</span><span class="nav-btn-arrow">&#8594;</span>
+    </button>
+  </nav>
+
+  <script src="three.min.js" defer></script>
+  <script src="script.js" defer></script>
+</body>
+</html>

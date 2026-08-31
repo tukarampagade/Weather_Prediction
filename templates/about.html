@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Academic Documentation — Weather Prediction Neural Network</title>
+<meta name="description" content="Academic documentation, syllabus mapping, viva questions and formula reference for the Weather Prediction Neural Network project.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<script defer src="{{ url_for('static', filename='script.js') }}"></script>
+</head>
+<body class="docs-body">
+
+<!-- ==================== ICON SPRITE ==================== -->
+<svg class="icon-sprite-defs" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="icon-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="icon-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z"/></symbol>
+    <symbol id="icon-menu" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></symbol>
+    <symbol id="icon-x" viewBox="0 0 24 24"><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></symbol>
+    <symbol id="icon-book" viewBox="0 0 24 24"><path d="M4 4h11a3 3 0 0 1 3 3v13H7a3 3 0 0 1-3-3V4Z"/><line x1="4" y1="4" x2="4" y2="20"/></symbol>
+    <symbol id="icon-layers" viewBox="0 0 24 24"><polygon points="12,3 21,8 12,13 3,8"/><polyline points="3,13 12,18 21,13"/><polyline points="3,17.5 12,22 21,17.5"/></symbol>
+    <symbol id="icon-grid" viewBox="0 0 24 24"><rect x="3" y="4" width="5" height="16" rx="1"/><rect x="10" y="4" width="5" height="16" rx="1"/><rect x="17" y="4" width="4" height="16" rx="1"/></symbol>
+    <symbol id="icon-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.2 9a2.8 2.8 0 1 1 3.8 2.6c-.9.4-1.4 1-1.4 2"/><circle cx="12" cy="17" r="0.9" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="icon-hash" viewBox="0 0 24 24"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="7" y2="21"/><line x1="17" y1="3" x2="14" y2="21"/></symbol>
+    <symbol id="icon-terminal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><polyline points="7,9 11,12 7,15"/><line x1="13" y1="16" x2="17" y2="16"/></symbol>
+    <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><line x1="20" y1="20" x2="15.2" y2="15.2"/></symbol>
+    <symbol id="icon-chevron-down" viewBox="0 0 24 24"><polyline points="4,8 12,16 20,8"/></symbol>
+    <symbol id="icon-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></symbol>
+    <symbol id="icon-check" viewBox="0 0 24 24"><polyline points="4,13 9,18 20,6"/></symbol>
+    <symbol id="icon-arrow-right" viewBox="0 0 24 24"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="13,5 20,12 13,19"/></symbol>
+  </defs>
+</svg>
+
+<!-- ==================== NAVBAR ==================== -->
+<nav class="navbar" id="navbar">
+  <div class="nav-container">
+    <a class="nav-brand" href="{{ url_for('index') }}">
+      <span class="brand-mark">W<span>N</span></span>
+      <span class="brand-text">WeatherNet<em>AI</em></span>
+    </a>
+
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navLinks">
+      <svg class="icon"><use href="#icon-menu"></use></svg>
+    </button>
+
+    <div class="nav-links" id="navLinks">
+      <a href="{{ url_for('index') }}">Dashboard</a>
+      <a href="{{ url_for('index') }}#predict">Predict</a>
+      <a href="{{ url_for('index') }}#analytics">Analytics</a>
+      <a href="{{ url_for('about') }}" class="active" aria-current="page">About</a>
+      <div class="nav-status" title="Model weights loaded successfully at server start">
+        <span class="status-dot" aria-hidden="true"></span>
+        Model Online
+      </div>
+    </div>
+
+    <button class="icon-btn theme-toggle" id="themeToggle" aria-label="Switch to dark mode" aria-pressed="false">
+      <svg class="icon icon-sun"><use href="#icon-sun"></use></svg>
+      <svg class="icon icon-moon"><use href="#icon-moon"></use></svg>
+    </button>
+  </div>
+</nav>
+
+<!-- ==================== DOCS HERO ==================== -->
+<header class="docs-hero">
+  <p class="docs-eyebrow mono">Academic Documentation</p>
+  <h1>Weather Prediction Neural Network</h1>
+  <p class="docs-subtitle">Academic Documentation &amp; Viva Preparation</p>
+  <div class="badge-row">
+    <span class="badge">Python</span>
+    <span class="badge">NumPy</span>
+    <span class="badge">Flask</span>
+    <span class="badge">Machine Learning</span>
+    <span class="badge">Binary Classification</span>
+    <span class="badge">Adam Optimizer</span>
+  </div>
+</header>
+
+<button class="sidebar-toggle" id="sidebarToggle" aria-expanded="false" aria-controls="docsSidebar">
+  <svg class="icon"><use href="#icon-layers"></use></svg>
+  Contents
+</button>
+
+<div class="docs-layout">
+
+  <!-- ==================== SIDEBAR ==================== -->
+  <aside class="docs-sidebar" id="docsSidebar">
+    <nav aria-label="Documentation sections" data-scroll-nav>
+      <a href="#summary" class="active" data-scroll-link>Summary</a>
+      <a href="#architecture" data-scroll-link>Architecture</a>
+      <a href="#syllabus" data-scroll-link>Syllabus Mapping</a>
+      <a href="#viva" data-scroll-link>Viva Questions</a>
+      <a href="#formulas" data-scroll-link>Formula Reference</a>
+      <a href="#setup" data-scroll-link>Setup Guide</a>
+    </nav>
+  </aside>
+
+  <!-- ==================== MAIN CONTENT ==================== -->
+  <main class="docs-content">
+
+    <!-- SUMMARY -->
+    <section id="summary" class="docs-section">
+      <span class="docs-section-eyebrow mono">01</span>
+      <h2>Project Summary</h2>
+      <p>
+        This project implements a complete, end-to-end binary classification system that predicts whether it
+        will rain tomorrow, based on today's atmospheric readings — temperature, humidity, pressure, wind speed
+        and cloud cover. Raw readings are cleaned, engineered into additional features, and standardized before
+        being passed through a feed-forward neural network with a ReLU hidden layer and a Sigmoid output layer,
+        trained with Binary Cross-Entropy loss and the Adam optimizer.
+      </p>
+      <p>
+        The trained network is evaluated with Accuracy, Precision, Recall and F1 Score on a held-out test set,
+        then served live through a Flask web application so a real request can be scaled, classified, and
+        returned as a rain probability in real time.
+      </p>
+      <div class="callout">
+        <svg class="icon"><use href="#icon-hash"></use></svg>
+        <p>The neural network — including both optimizers (SGD and Adam) and every loss function — is implemented entirely from scratch using NumPy. No TensorFlow, Keras or PyTorch is used anywhere in this codebase, keeping every matrix operation, gradient and weight update fully transparent for academic evaluation.</p>
+      </div>
+    </section>
+
+    <!-- ARCHITECTURE -->
+    <section id="architecture" class="docs-section">
+      <span class="docs-section-eyebrow mono">02</span>
+      <h2>Architecture</h2>
+      <p>Data flows through the system in a single, linear pipeline from raw CSV rows to a served prediction.</p>
+
+      <div class="arch-flow">
+        <div class="arch-node">Weather Dataset</div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-node">Data Preprocessing</div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-node">Feature Engineering</div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-node">Feature Scaling</div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-node arch-node-layer">Input Layer</div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-node arch-node-layer">Hidden Layer + ReLU</div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-node arch-node-layer">Output Layer + Sigmoid</div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-node arch-node-accent">Rain Probability</div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-node arch-node-accent">Rain / No Rain</div>
+        <div class="arch-arrow">↓</div>
+        <div class="arch-node">Flask Web Application</div>
+      </div>
+    </section>
+
+    <!-- SYLLABUS MAPPING -->
+    <section id="syllabus" class="docs-section">
+      <span class="docs-section-eyebrow mono">03</span>
+      <h2>Syllabus Mapping</h2>
+      <p>Every project file maps to a concrete unit of the Diploma AI/ML syllabus.</p>
+
+      <div class="search-bar">
+        <svg class="icon"><use href="#icon-search"></use></svg>
+        <input type="search" id="syllabusSearch" placeholder="Search files, concepts or units…" aria-label="Search syllabus mapping table">
+      </div>
+
+      <div class="table-wrap">
+        <table class="data-table searchable-table" id="syllabusTable">
+          <thead>
+            <tr>
+              <th>Project File</th>
+              <th>Concept</th>
+              <th>Implementation</th>
+              <th>AI/ML Unit</th>
+              <th>Academic Importance</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="mono">preprocess.py</td>
+              <td>Data Cleaning &amp; Feature Scaling</td>
+              <td>NumPy/Pandas operations, standardization pipeline</td>
+              <td>Unit 1 — Data Handling with NumPy/Pandas</td>
+              <td>Produces a clean, scaled dataset so the network trains on comparable numeric ranges.</td>
+            </tr>
+            <tr>
+              <td class="mono">neural_network.py</td>
+              <td>Perceptron Model &amp; Activations</td>
+              <td>Weight/bias init, ReLU, Sigmoid, forward and backward pass</td>
+              <td>Unit 2/3 — Neural Network Fundamentals &amp; Backpropagation</td>
+              <td>The core learning engine — demonstrates neural network mathematics without any framework.</td>
+            </tr>
+            <tr>
+              <td class="mono">optimizer.py</td>
+              <td>Gradient Descent Variants</td>
+              <td>SGD and Adam update rules implemented from scratch</td>
+              <td>Unit 4 — Optimization Algorithms</td>
+              <td>Shows how adaptive optimizers converge faster than plain gradient descent.</td>
+            </tr>
+            <tr>
+              <td class="mono">train_model.py</td>
+              <td>Model Evaluation</td>
+              <td>Accuracy, Precision, Recall, F1 and confusion matrix generation</td>
+              <td>Unit 5 — Model Evaluation Metrics</td>
+              <td>Validates the trained model objectively before it is deployed.</td>
+            </tr>
+            <tr>
+              <td class="mono">app.py</td>
+              <td>Model Deployment</td>
+              <td>Flask routes that load the model once and serve live predictions</td>
+              <td>Unit 6 — ML Model Deployment</td>
+              <td>Bridges a trained model with a usable, interactive web interface.</td>
+            </tr>
+            <tr>
+              <td class="mono">services/weather_api.py</td>
+              <td>Supplementary Service Layer</td>
+              <td>Auxiliary integration module, kept separate from core model code</td>
+              <td>Unit 6 — ML Model Deployment</td>
+              <td>Illustrates separating external-facing services from the core model logic.</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="no-results" id="syllabusNoResults" hidden>No matching rows found.</p>
+      </div>
+    </section>
+
+    <!-- VIVA QUESTIONS -->
+    <section id="viva" class="docs-section">
+      <span class="docs-section-eyebrow mono">04</span>
+      <h2>Viva Questions</h2>
+      <p>Twenty viva-ready questions covering every concept an examiner is likely to probe.</p>
+
+      <div class="viva-toolbar">
+        <div class="search-bar">
+          <svg class="icon"><use href="#icon-search"></use></svg>
+          <input type="search" id="vivaSearch" placeholder="Search questions or answers…" aria-label="Search viva questions">
+        </div>
+        <div class="viva-toolbar-actions">
+          <button type="button" class="btn btn-outline btn-sm" id="expandAllBtn">Expand All</button>
+          <button type="button" class="btn btn-ghost btn-sm" id="collapseAllBtn">Collapse All</button>
+        </div>
+      </div>
+
+      <div class="accordion" id="vivaAccordion">
+
+        <div class="accordion-item" data-search="what is gradient descent iterative optimization algorithm updates weights direction opposite gradient loss function learning rate">
+          <h3><button class="accordion-trigger" aria-expanded="false" aria-controls="viva-1">Q1. What is gradient descent?<svg class="icon"><use href="#icon-chevron-down"></use></svg></button></h3>
+          <div class="accordion-panel" id="viva-1" hidden>
+            <p>Gradient descent is an iterative optimization algorithm that updates each weight in the direction opposite to the gradient of the loss function, taking small steps controlled by a learning rate until the loss stops improving. It is used because it scales to the thousands of parameters in a neural network, where an exact analytical solution is not practical.</p>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-search="what is backpropagation computes error contribution chain rule layer by layer">
+          <h3><button class="accordion-trigger" aria-expanded="false" aria-controls="viva-2">Q2. What is backpropagation?<svg class="icon"><use href="#icon-chevron-down"></use></svg></button></h3>
+          <div class="accordion-panel" id="viva-2" hidden>
+            <p>Backpropagation computes how much each weight contributed to the final error by propagating the loss gradient backward through the network, layer by layer, using the chain rule. It turns a single forward-pass error into a precise gradient for every weight and bias in the model.</p>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-search="why is the chain rule required composed functions layers differentiate">
+          <h3><button class="accordion-trigger" aria-expanded="false" aria-controls="viva-3">Q3. Why is the chain rule required?<svg class="icon"><use href="#icon-chevron-down"></use></svg></button></h3>
+          <div class="accordion-panel" id="viva-3" hidden>
+            <p>The network is a composition of functions — linear layers followed by activations — so the effect of an early weight on the final loss passes through every layer after it. The chain rule is the calculus rule for differentiating composed functions, letting the gradient be built layer by layer instead of derived from scratch for the whole network at once.</p>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-search="vanishing gradient problem sigmoid tanh small derivative deep networks">
+          <h3><button class="accordion-trigger" aria-expanded="false" aria-controls="viva-4">Q4. What is the vanishing gradient problem?<svg class="icon"><use href="#icon-chevron-down"></use></svg></button></h3>
+          <div class="accordion-panel" id="viva-4" hidden>
+            <p>In deep networks using Sigmoid or Tanh, the derivative of these functions is small almost everywhere and shrinks toward zero at the extremes. When gradients are multiplied together across many layers during backpropagation, they can shrink exponentially, so early layers receive almost no learning signal and train very slowly.</p>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-search="why use relu gradient never shrinks hidden layer">
+          <h3><button class="accordion-trigger" aria-expanded="false" aria-controls="viva-5">Q5. Why use ReLU?<svg class="icon"><use href="#icon-chevron-down"></use></svg></button></h3>
+          <div class="accordion-panel" id="viva-5" hidden>
+            <p>ReLU outputs the input directly when it is positive and zero otherwise, so its gradient is either 1 or 0 — it never shrinks the way Sigmoid's gradient does. This keeps gradients flowing through the hidden layers during backpropagation, which is why ReLU is used in this project's hidden layer.</p>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-search="why use sigmoid squashes range 0 1 probability output layer">
+          <h3><button class="accordion-trigger" aria-expanded="false" aria-controls="viva-6">Q6. Why use Sigmoid?<svg class="icon"><use href="#icon-chevron-down"></use></svg></button></h3>
+          <div class="accordion-panel" id="viva-6" hidden>
+            <p>Sigmoid squashes any real number into the range (0, 1), which is exactly the range a probability must fall in. It is used at the output layer so the network's raw score can be read directly as a probability of rain.</p>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-search="why use binary cross entropy penalizes confident wrong answers strong gradient">
+          <h3><button class="accordion-trigger" aria-expanded="false" aria-controls="viva-7">Q7. Why use Binary Cross-Entropy?<svg class="icon"><use href="#icon-chevron-down"></use></svg></button></h3>
+          <div class="accordion-panel" id="viva-7" hidden>
+            <p>Binary Cross-Entropy directly measures the distance between a predicted probability and a 0/1 label in a way that penalizes confident wrong answers heavily. That steep penalty produces a strong, useful gradient exactly when the model most needs to correct itself.</p>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-search="binary cross entropy vs mean squared error mse classification flat loss surface">
+          <h3><button class="accordion-trigger" aria-expanded="false" aria-controls="viva-8">Q8. BCE vs MSE — why not use Mean Squared Error?<svg class="icon"><use href="#icon-chevron-down"></use></svg></button></h3>
+          <div class="accordion-panel" id="viva-8" hidden>
+            <p>Cross-Entropy Loss produces a much steeper gradient when the predicted probability is far from the true label, so the model learns faster for classification tasks. MSE combined with Sigmoid can flatten out when predictions are confidently wrong, slowing convergence — a problem Cross-Entropy avoids.</p>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-search="how does adam optimizer work momentum moving average adaptive learning rate versus sgd">
+          <h3><button class="accordion-trigger" aria-expanded="false" aria-controls="viva-9">Q9. How does Adam work compared to SGD?<svg class="icon"><use href="#icon-chevron-down"></use></svg></button></h3>
+          <div class="accordion-panel" id="viva-9" hidden>
+            <p>Adam keeps a per-parameter moving average of the gradient (momentum) and of the squared gradient (scale), then uses both to adapt the effective learning rate for every parameter individually. Plain SGD instead applies one fixed learning rate to every parameter, which converges less smoothly on uneven loss surfaces.</p>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-search="what are beta1 beta2 decay rate first second moment adam">
+          <h3><button class="accordion-trigger" aria-expanded="false" aria-controls="viva-10">Q10. What are beta1 and beta2?<svg class="icon"><use href="#icon-chevron-down"></use></svg></button></h3>
+          <div class="accordion-panel" id="viva-10" hidden>
+            <p>beta1 (typically 0.9) controls how quickly the first-moment estimate — the running average of the gradient — decays. beta2 (typically 0.999) controls how quickly the second-moment estimate — the running average of the squared gradient — decays.</p>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-search="what is epsilon in adam division by zero numerical stability">
+          <h3><button class="accordion-trigger" aria-expanded="false" aria-controls="viva-11">Q11. What is epsilon in Adam?<svg class="icon"><use href="#icon-chevron-down"></use></svg></button></h3>
+          <div class="accordion-panel" id="viva-11" hidden>
+            <p>epsilon is a tiny constant, typically 1e-8, added to the denominator of the Adam update rule purely to prevent division by zero when the second-moment estimate is close to zero.</p>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-search="why use he initialization relu variance fan in weights">
+          <h3><button class="accordion-trigger" aria-expanded="false" aria-controls="viva-12">Q12. Why use He initialization?<svg class="icon"><use href="#icon-chevron-down"></use></svg></button></h3>
+          <div class="accordion-panel" id="viva-12" hidden>
+            <p>He initialization scales the initial weights by the square root of 2 divided by the number of inputs to a layer. That factor of 2 compensates for ReLU zeroing out roughly half of its inputs, keeping the variance of activations stable as they pass through hidden layers.</p>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-search="why use xavier initialization sigmoid tanh symmetric saturating output layer">
+          <h3><button class="accordion-trigger" aria-expanded="false" aria-controls="viva-13">Q13. Why use Xavier initialization?<svg class="icon"><use href="#icon-chevron-down"></use></svg></button></h3>
+          <div class="accordion-panel" id="viva-13" hidden>
+            <p>Xavier initialization scales weights by the square root of 1 divided by the number of inputs, which suits the symmetric, saturating shape of Sigmoid and Tanh better than He initialization does. It is used at this project's output layer, where Sigmoid is the activation function.</p>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-search="why standardize features scale mean standard deviation pressure cloud cover">
+          <h3><button class="accordion-trigger" aria-expanded="false" aria-controls="viva-14">Q14. Why standardize features before training?<svg class="icon"><use href="#icon-chevron-down"></use></svg></button></h3>
+          <div class="accordion-panel" id="viva-14" hidden>
+            <p>Standardization subtracts the mean and divides by the standard deviation, putting every feature on a comparable scale. Without it, a feature with a naturally large range, such as pressure around 1000, would dominate gradient updates over a feature with a small range, such as cloud cover from 0 to 100.</p>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-search="why use np clip numerical stability overflow log zero nan">
+          <h3><button class="accordion-trigger" aria-expanded="false" aria-controls="viva-15">Q15. Why use np.clip()?<svg class="icon"><use href="#icon-chevron-down"></use></svg></button></h3>
+          <div class="accordion-panel" id="viva-15" hidden>
+            <p>np.clip() is used for numerical stability. Inside Sigmoid it keeps the input within a safe range so np.exp() cannot overflow; inside Cross-Entropy it keeps predicted probabilities away from exactly 0 or 1 so np.log() never receives zero, which would otherwise produce -infinity or NaN and break training.</p>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-search="what are precision and recall true positive false positive false negative">
+          <h3><button class="accordion-trigger" aria-expanded="false" aria-controls="viva-16">Q16. What are Precision and Recall?<svg class="icon"><use href="#icon-chevron-down"></use></svg></button></h3>
+          <div class="accordion-panel" id="viva-16" hidden>
+            <p>Precision is the fraction of predicted-rain days that were actually rain, measuring how trustworthy a positive prediction is. Recall is the fraction of actual rain days the model successfully caught, measuring how complete the detection is.</p>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-search="why is f1 score useful harmonic mean precision recall imbalanced dataset">
+          <h3><button class="accordion-trigger" aria-expanded="false" aria-controls="viva-17">Q17. Why is F1 Score useful?<svg class="icon"><use href="#icon-chevron-down"></use></svg></button></h3>
+          <div class="accordion-panel" id="viva-17" hidden>
+            <p>F1 is the harmonic mean of Precision and Recall, so it only stays high when both are reasonably high — a model cannot inflate F1 by favoring one at the extreme expense of the other. That makes it a more honest single-number summary than accuracy alone on a dataset where rain and no-rain days are not perfectly balanced.</p>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-search="why implement neural network from scratch numpy transparent no framework">
+          <h3><button class="accordion-trigger" aria-expanded="false" aria-controls="viva-18">Q18. Why implement the neural network from scratch?<svg class="icon"><use href="#icon-chevron-down"></use></svg></button></h3>
+          <div class="accordion-panel" id="viva-18" hidden>
+            <p>Implementing every matrix multiplication, activation, loss and gradient update in plain NumPy — with no TensorFlow, Keras or PyTorch — makes each step transparent and explainable rather than hidden inside a framework. That transparency is exactly what a viva examiner can ask about line by line.</p>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-search="what is forward propagation input weights bias activation output">
+          <h3><button class="accordion-trigger" aria-expanded="false" aria-controls="viva-19">Q19. What is forward propagation?<svg class="icon"><use href="#icon-chevron-down"></use></svg></button></h3>
+          <div class="accordion-panel" id="viva-19" hidden>
+            <p>Forward propagation is the process of passing an input through the network's layers in order — multiplying by weights, adding a bias, and applying an activation function at each layer — to produce a final output, which in this project is a probability of rain.</p>
+          </div>
+        </div>
+
+        <div class="accordion-item" data-search="how does flask deploy the model load weights startup predict route">
+          <h3><button class="accordion-trigger" aria-expanded="false" aria-controls="viva-20">Q20. How does Flask deploy the model?<svg class="icon"><use href="#icon-chevron-down"></use></svg></button></h3>
+          <div class="accordion-panel" id="viva-20" hidden>
+            <p>At server startup, app.py loads the saved weights, the fitted scaler and the training metrics once into memory. Each request to /predict then reuses that already-loaded model to scale the incoming form values and run a single forward pass, returning the result on the same page.</p>
+          </div>
+        </div>
+
+      </div>
+      <p class="no-results" id="vivaNoResults" hidden>No matching viva questions found.</p>
+    </section>
+
+    <!-- FORMULA REFERENCE -->
+    <section id="formulas" class="docs-section">
+      <span class="docs-section-eyebrow mono">05</span>
+      <h2>Formula Reference</h2>
+      <p>The exact equations implemented in <code>neural_network.py</code> and <code>optimizer.py</code>.</p>
+
+      <div class="formula-grid">
+        <div class="formula-card">
+          <h4>Forward Propagation</h4>
+          <pre class="mono">Z = XW + b
+A = f(Z)</pre>
+        </div>
+        <div class="formula-card">
+          <h4>ReLU</h4>
+          <pre class="mono">ReLU(x) = max(0, x)</pre>
+        </div>
+        <div class="formula-card">
+          <h4>Sigmoid</h4>
+          <pre class="mono">σ(z) = 1 / (1 + e⁻ᶻ)</pre>
+        </div>
+        <div class="formula-card">
+          <h4>Binary Cross-Entropy</h4>
+          <pre class="mono">L = -[y·log(p) + (1-y)·log(1-p)]</pre>
+        </div>
+        <div class="formula-card">
+          <h4>Gradient Descent</h4>
+          <pre class="mono">W := W - η · ∂L/∂W</pre>
+        </div>
+        <div class="formula-card formula-card-wide">
+          <h4>Adam Optimizer</h4>
+          <pre class="mono">mₜ = β₁mₜ₋₁ + (1-β₁)gₜ
+vₜ = β₂vₜ₋₁ + (1-β₂)gₜ²
+m̂ₜ = mₜ / (1-β₁ᵗ)
+v̂ₜ = vₜ / (1-β₂ᵗ)
+θₜ = θₜ₋₁ - α · m̂ₜ / (√v̂ₜ + ε)</pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- SETUP GUIDE -->
+    <section id="setup" class="docs-section">
+      <span class="docs-section-eyebrow mono">06</span>
+      <h2>Setup Guide</h2>
+      <p>Run the full project locally in PyCharm on Windows.</p>
+
+      <ol class="setup-steps">
+        <li class="setup-step">
+          <span class="setup-step-num">1</span>
+          <div class="setup-step-body">
+            <h4>Open the project in PyCharm</h4>
+            <p>Open the <code>Weather_Prediction</code> folder as a new project in PyCharm.</p>
+          </div>
+        </li>
+        <li class="setup-step">
+          <span class="setup-step-num">2</span>
+          <div class="setup-step-body">
+            <h4>Open the PyCharm terminal</h4>
+            <p>View → Tool Windows → Terminal.</p>
+          </div>
+        </li>
+        <li class="setup-step">
+          <span class="setup-step-num">3</span>
+          <div class="setup-step-body">
+            <h4>Create a virtual environment</h4>
+            <div class="code-block">
+              <code class="mono">python -m venv venv</code>
+              <button type="button" class="copy-btn" aria-label="Copy command">
+                <svg class="icon icon-copy"><use href="#icon-copy"></use></svg>
+                <svg class="icon icon-check"><use href="#icon-check"></use></svg>
+              </button>
+            </div>
+          </div>
+        </li>
+        <li class="setup-step">
+          <span class="setup-step-num">4</span>
+          <div class="setup-step-body">
+            <h4>Activate the virtual environment</h4>
+            <div class="code-block">
+              <code class="mono">venv\Scripts\activate</code>
+              <button type="button" class="copy-btn" aria-label="Copy command">
+                <svg class="icon icon-copy"><use href="#icon-copy"></use></svg>
+                <svg class="icon icon-check"><use href="#icon-check"></use></svg>
+              </button>
+            </div>
+          </div>
+        </li>
+        <li class="setup-step">
+          <span class="setup-step-num">5</span>
+          <div class="setup-step-body">
+            <h4>Install dependencies</h4>
+            <div class="code-block">
+              <code class="mono">pip install -r requirements.txt</code>
+              <button type="button" class="copy-btn" aria-label="Copy command">
+                <svg class="icon icon-copy"><use href="#icon-copy"></use></svg>
+                <svg class="icon icon-check"><use href="#icon-check"></use></svg>
+              </button>
+            </div>
+          </div>
+        </li>
+        <li class="setup-step">
+          <span class="setup-step-num">6</span>
+          <div class="setup-step-body">
+            <h4>Run preprocessing (optional console report)</h4>
+            <div class="code-block">
+              <code class="mono">python preprocess.py</code>
+              <button type="button" class="copy-btn" aria-label="Copy command">
+                <svg class="icon icon-copy"><use href="#icon-copy"></use></svg>
+                <svg class="icon icon-check"><use href="#icon-check"></use></svg>
+              </button>
+            </div>
+          </div>
+        </li>
+        <li class="setup-step">
+          <span class="setup-step-num">7</span>
+          <div class="setup-step-body">
+            <h4>Train the model and generate graphs</h4>
+            <div class="code-block">
+              <code class="mono">python train_model.py</code>
+              <button type="button" class="copy-btn" aria-label="Copy command">
+                <svg class="icon icon-copy"><use href="#icon-copy"></use></svg>
+                <svg class="icon icon-check"><use href="#icon-check"></use></svg>
+              </button>
+            </div>
+          </div>
+        </li>
+        <li class="setup-step">
+          <span class="setup-step-num">8</span>
+          <div class="setup-step-body">
+            <h4>Launch the web application</h4>
+            <div class="code-block">
+              <code class="mono">python app.py</code>
+              <button type="button" class="copy-btn" aria-label="Copy command">
+                <svg class="icon icon-copy"><use href="#icon-copy"></use></svg>
+                <svg class="icon icon-check"><use href="#icon-check"></use></svg>
+              </button>
+            </div>
+          </div>
+        </li>
+        <li class="setup-step">
+          <span class="setup-step-num">9</span>
+          <div class="setup-step-body">
+            <h4>Open the dashboard</h4>
+            <div class="code-block">
+              <code class="mono">http://127.0.0.1:5000/</code>
+              <button type="button" class="copy-btn" aria-label="Copy address">
+                <svg class="icon icon-copy"><use href="#icon-copy"></use></svg>
+                <svg class="icon icon-check"><use href="#icon-check"></use></svg>
+              </button>
+            </div>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+  </main>
+</div>
+
+<footer class="footer">
+  <p>Weather Prediction Using Neural Network — Diploma AI &amp; ML Project · Built with NumPy + Flask</p>
+</footer>
+
+<div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true"></div>
+
+</body>
+</html>
