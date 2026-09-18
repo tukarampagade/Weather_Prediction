@@ -1,7 +1,5 @@
 /* =========================================================================
-   WEATHER PREDICTION NEURAL NETWORK — presentation logic
-   Sections: state, navigation, reveal system, per-slide effects,
-   Three.js scenes (ambient / hero net / architecture net), bootstrap.
+   WEATHER PREDICTION NEURAL NETWORK — presentation logic (8-slide deck)
    ========================================================================= */
 (function(){
   'use strict';
@@ -9,11 +7,11 @@
   /* ---------------------------------------------------------------------
      STATE
   --------------------------------------------------------------------- */
-  var totalSlides = 6;
+  var totalSlides = 8;
   var current = 1;
   var animating = false;
   var slideEls = Array.prototype.slice.call(document.querySelectorAll('.slide'));
-  var slideNames = ['TITLE','THE PROBLEM','WORKFLOW','NEURAL NETWORK','PREDICTION','CONCLUSION'];
+  var slideNames = ['INTRODUCTION','LITERATURE SURVEY','PROBLEM & OBJECTIVES','SCOPE & LIMITATIONS','REQUIREMENTS','METHODOLOGY','NEURAL NETWORK & TESTING','RESULT & CONCLUSION'];
 
   var pointer = { x: 0, y: 0 };
   var smoothPointer = { x: 0, y: 0 };
@@ -69,7 +67,7 @@
     incoming.classList.add('no-anim');
     incoming.classList.remove('pos-left', 'pos-right', 'is-current');
     incoming.classList.add(dir === 1 ? 'pos-right' : 'pos-left');
-    void incoming.offsetWidth; /* force reflow so the jump above isn't animated */
+    void incoming.offsetWidth;
     incoming.classList.remove('no-anim');
 
     requestAnimationFrame(function(){
@@ -80,6 +78,7 @@
     });
 
     deactivateReveals(outgoing);
+    stopFlowStrips(outgoing, leavingIndex);
     stopSlideEffects(leavingIndex);
 
     current = targetIndex;
@@ -93,6 +92,7 @@
 
     setTimeout(function(){
       activateReveals(incoming);
+      startFlowStrips(incoming, current);
       startSlideEffects(current);
     }, 70);
   }
@@ -105,7 +105,7 @@
     for (var i = 0; i < els.length; i++){
       (function(el){
         var order = parseFloat(el.getAttribute('data-reveal')) || 0;
-        setTimeout(function(){ el.classList.add('is-visible'); }, 110 + order * 140);
+        setTimeout(function(){ el.classList.add('is-visible'); }, 110 + order * 120);
       })(els[i]);
     }
   }
@@ -115,33 +115,32 @@
   }
 
   /* ---------------------------------------------------------------------
-     PER-SLIDE EFFECTS
+     GENERIC FLOW-STRIP ANIMATION (slides 2, 3, 4, 6, 8)
   --------------------------------------------------------------------- */
-  function startSlideEffects(n){
-    if (n === 2) startMiniFlow();
-    if (n === 3) setTimeout(startPipeline, 260);
-    if (n === 5) setTimeout(runPredict, 260);
+  var flowIntervals = {};
+  function startFlowStrips(slideEl, slideNum){
+    var strips = slideEl.querySelectorAll('.flow-strip');
+    strips.forEach(function(strip, si){
+      var steps = strip.querySelectorAll('.flow-step');
+      if (!steps.length) return;
+      var idx = 0;
+      var key = slideNum + '-' + si;
+      clearInterval(flowIntervals[key]);
+      flowIntervals[key] = setInterval(function(){
+        for (var i = 0; i < steps.length; i++) steps[i].classList.remove('is-lit');
+        steps[idx].classList.add('is-lit');
+        idx = (idx + 1) % steps.length;
+      }, 1150);
+    });
   }
-  function stopSlideEffects(n){
-    if (n === 2) stopMiniFlow();
-    if (n === 3) stopPipeline();
-    if (n === 5) resetPredict();
+  function stopFlowStrips(slideEl, slideNum){
+    var strips = slideEl.querySelectorAll('.flow-strip');
+    strips.forEach(function(strip, si){
+      var key = slideNum + '-' + si;
+      clearInterval(flowIntervals[key]);
+      delete flowIntervals[key];
+    });
   }
-
-  /* ---- Slide 2: mini flow sweep ---- */
-  var miniFlowInterval = null, miniFlowIdx = 0;
-  function startMiniFlow(){
-    var steps = document.querySelectorAll('.mini-flow-step');
-    if (!steps.length) return;
-    miniFlowIdx = 0;
-    clearInterval(miniFlowInterval);
-    miniFlowInterval = setInterval(function(){
-      for (var i = 0; i < steps.length; i++) steps[i].classList.remove('is-lit');
-      steps[miniFlowIdx].classList.add('is-lit');
-      miniFlowIdx = (miniFlowIdx + 1) % steps.length;
-    }, 1150);
-  }
-  function stopMiniFlow(){ clearInterval(miniFlowInterval); }
 
   function initOrbitSpokes(){
     var orbit = document.querySelector('.orbit');
@@ -155,7 +154,19 @@
     });
   }
 
-  /* ---- Slide 3: pipeline demo ---- */
+  /* ---------------------------------------------------------------------
+     PER-SLIDE EFFECTS (pipeline on slide 6, demo prediction on slide 7)
+  --------------------------------------------------------------------- */
+  function startSlideEffects(n){
+    if (n === 6) setTimeout(startPipeline, 260);
+    if (n === 7) setTimeout(runPredict, 260);
+  }
+  function stopSlideEffects(n){
+    if (n === 6) stopPipeline();
+    if (n === 7) resetPredict();
+  }
+
+  /* ---- Slide 6: pipeline demo ---- */
   var pipelineInterval = null, pipelineIdx = 0;
   function startPipeline(){
     var stages = Array.prototype.slice.call(document.querySelectorAll('.stage'));
@@ -186,7 +197,7 @@
     document.querySelectorAll('.pipe-seg').forEach(function(s){ s.classList.remove('is-lit'); });
   }
 
-  /* ---- Slide 5: demo prediction sequence ---- */
+  /* ---- Slide 7: demo prediction sequence ---- */
   var predictTimeouts = [];
   function resetPredict(){
     predictTimeouts.forEach(clearTimeout);
@@ -197,7 +208,7 @@
     var gaugeFill = document.getElementById('gauge-fill');
     var gaugeNum = document.getElementById('gauge-number');
     if (statusText) statusText.textContent = 'ANALYSING';
-    if (status) { status.classList.remove('is-fading'); status.style.opacity = ''; }
+    if (status) { status.classList.remove('is-fading'); status.style.opacity = ''; status.style.display = ''; }
     if (panel) panel.classList.remove('is-visible');
     if (gaugeFill) gaugeFill.style.strokeDashoffset = '540';
     if (gaugeNum) gaugeNum.textContent = '0';
@@ -210,26 +221,26 @@
     var gaugeFill = document.getElementById('gauge-fill');
     var gaugeNum = document.getElementById('gauge-number');
     var seq = ['ANALYSING', 'NEURAL NETWORK', 'CALCULATING PROBABILITY'];
-    var delay = 550;
+    var delay = 500;
 
     seq.forEach(function(label, i){
-      if (i === 0) return; /* already showing */
+      if (i === 0) return;
       predictTimeouts.push(setTimeout(function(){
         status.classList.add('is-fading');
         predictTimeouts.push(setTimeout(function(){
           statusText.textContent = label;
           status.classList.remove('is-fading');
-        }, 260));
+        }, 240));
       }, delay));
-      delay += 1150;
+      delay += 1000;
     });
 
     predictTimeouts.push(setTimeout(function(){
-      status.classList.add('is-fading');
+      status.style.display = 'none';
       panel.classList.add('is-visible');
       gaugeFill.style.strokeDashoffset = String(540 * (1 - 0.78));
-      animateCount(gaugeNum, 78, 1100);
-    }, delay + 350));
+      animateCount(gaugeNum, 78, 1000);
+    }, delay + 300));
   }
   function animateCount(el, target, duration){
     var start = performance.now();
@@ -262,6 +273,13 @@
 
     var wheelLock = false;
     window.addEventListener('wheel', function(e){
+      if (e.target.closest && (e.target.closest('.pipeline-wrap') || e.target.closest('.slide-inner'))){
+        /* allow internal scroll on content-heavy slides; only hijack the
+           wheel for slide navigation when the slide's own content isn't
+           scrollable (i.e. it fits fully on screen already) */
+        var scrollable = e.target.closest('.slide-inner');
+        if (scrollable && scrollable.scrollHeight > scrollable.clientHeight + 4) return;
+      }
       if (wheelLock) return;
       if (Math.abs(e.deltaY) < 26) return;
       wheelLock = true;
@@ -293,7 +311,10 @@
     document.addEventListener('fullscreenchange', function(){
       var btn = document.getElementById('fullscreen-btn');
       var icon = btn.querySelector('.hud-btn-icon');
-      icon.textContent = document.fullscreenElement ? '\u2715' : '\u2921';
+      var label = btn.querySelector('.hud-btn-label');
+      var isFs = !!document.fullscreenElement;
+      icon.textContent = isFs ? '\u2715' : '\u2921';
+      if (label) label.textContent = isFs ? 'EXIT FULLSCREEN' : 'FULLSCREEN';
     });
   }
 
@@ -363,8 +384,7 @@
       grad.addColorStop(1, 'rgba(0,0,0,0)');
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, size, size);
-      var tex = new THREE.CanvasTexture(c);
-      return tex;
+      return new THREE.CanvasTexture(c);
     }
 
     var sphereGroup = new THREE.Group();
@@ -374,14 +394,8 @@
       { r: 8, color: 0xffb648, pos: [4, 7, -12], op: 0.14 }
     ];
     sphereDefs.forEach(function(d){
-      var mat = new THREE.SpriteMaterial({
-        map: makeGlowTexture(d.color),
-        transparent: true,
-        opacity: d.op,
-        depthWrite: false,
-        blending: THREE.AdditiveBlending
-      });
-      var sprite = new THREE.Sprite(mat);
+      var mat2 = new THREE.SpriteMaterial({ map: makeGlowTexture(d.color), transparent: true, opacity: d.op, depthWrite: false, blending: THREE.AdditiveBlending });
+      var sprite = new THREE.Sprite(mat2);
       sprite.scale.set(d.r, d.r, 1);
       sprite.position.set(d.pos[0], d.pos[1], d.pos[2]);
       sphereGroup.add(sprite);
@@ -411,7 +425,7 @@
 
     var baseDistHero = 7.2;
     var halfFovHero = (46 * Math.PI / 180) / 2;
-    var desiredHalfWidthHero = 2.55; /* input ring radius (2.15) plus node/halo margin */
+    var desiredHalfWidthHero = 2.55;
     function sync(){
       var w = canvas.clientWidth || 1, h = canvas.clientHeight || 1;
       renderer.setSize(w, h, false);
@@ -516,7 +530,7 @@
     return { render: render };
   }
 
-  /* ---- Slide 4: layered input -> hidden -> output architecture ---- */
+  /* ---- Slide 7: layered input -> hidden -> output architecture ---- */
   function initMainNet(){
     var canvas = document.getElementById('main-net-canvas');
     var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
@@ -527,7 +541,7 @@
 
     var baseDist = 9.4;
     var halfFovMain = (42 * Math.PI / 180) / 2;
-    var desiredHalfWidth = 4.35; /* input/output span (+-3.4) plus node + halo margin */
+    var desiredHalfWidth = 4.35;
     function sync(){
       var w = canvas.clientWidth || 1, h = canvas.clientHeight || 1;
       renderer.setSize(w, h, false);
@@ -638,7 +652,7 @@
 
     if (bgScene) bgScene.render(dt);
     if (current === 1 && heroScene) heroScene.render(dt, smoothPointer);
-    if (current === 4 && mainScene) mainScene.render(dt, smoothPointer);
+    if (current === 7 && mainScene) mainScene.render(dt, smoothPointer);
 
     cgX += (mouseX - cgX) * 0.16;
     cgY += (mouseY - cgY) * 0.16;
@@ -671,6 +685,7 @@
       var loader = document.getElementById('loader');
       if (loader) loader.classList.add('is-hidden');
       activateReveals(slideEls[0]);
+      startFlowStrips(slideEls[0], 1);
       startSlideEffects(1);
     }, 650);
   }

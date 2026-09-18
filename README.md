@@ -83,9 +83,11 @@ pip install -r requirements.txt
 # 3. (Optional) Preview the preprocessing pipeline
 python preprocess.py
 
+
 # 4. Train the model — this regenerates model_weights.npz, scaler.pkl,
 #    and all 7 graphs in static/graphs/
 python train_model.py
+
 
 # 5. Launch the web dashboard
 python app.py
@@ -93,7 +95,11 @@ python app.py
 # 6. Open your browser
 http://127.0.0.1:5000/
 ```
-
+python -m venv venv
+pip install -r requirements.txt
+python preprocess.py
+python train_model.py
+python app.py
 The repo already ships with a trained `model_weights.npz` and all 7 graphs
 pre-generated, so `python app.py` works immediately — re-running
 `train_model.py` is only needed if you want to retrain from scratch (e.g.

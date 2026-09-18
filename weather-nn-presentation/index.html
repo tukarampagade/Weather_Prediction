@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="dark">
-<title>Weather Prediction Neural Network — Presentation</title>
+<title>Weather Prediction Neural Network — College Project Presentation</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body data-active-slide="1">
@@ -30,11 +30,11 @@
     <span class="hud-dot"></span> NN&#8209;WX SYS &nbsp;/&nbsp; MODEL: FEEDFORWARD&#8209;NN &nbsp;/&nbsp; MODE: SIMULATED
   </div>
   <div class="hud-strip hud-strip--right" aria-hidden="true">
-    <span id="hud-slide-name">TITLE</span>
+    <span id="hud-slide-name">INTRODUCTION</span>
   </div>
 
   <button id="fullscreen-btn" class="hud-btn" type="button" aria-label="Toggle fullscreen presentation">
-    <span class="hud-btn-icon">&#9974;</span> FULLSCREEN
+    <span class="hud-btn-icon">&#9974;</span> <span class="hud-btn-label">FULLSCREEN</span>
   </button>
 
   <div id="cursor-glow" aria-hidden="true"></div>
@@ -48,18 +48,18 @@
     <div class="node-label" data-node="wind" data-slide="1"><span class="node-ico">&#128168;</span>Wind</div>
     <div class="node-label" data-node="cloud" data-slide="1"><span class="node-ico">&#9729;</span>Cloud Cover</div>
 
-    <div class="net-input-label" data-node="0" data-slide="4">Temperature</div>
-    <div class="net-input-label" data-node="1" data-slide="4">Humidity</div>
-    <div class="net-input-label" data-node="2" data-slide="4">Pressure</div>
-    <div class="net-input-label" data-node="3" data-slide="4">Wind Speed</div>
-    <div class="net-input-label" data-node="4" data-slide="4">Cloud Cover</div>
+    <div class="net-input-label" data-node="0" data-slide="7">Temperature</div>
+    <div class="net-input-label" data-node="1" data-slide="7">Humidity</div>
+    <div class="net-input-label" data-node="2" data-slide="7">Pressure</div>
+    <div class="net-input-label" data-node="3" data-slide="7">Wind Speed</div>
+    <div class="net-input-label" data-node="4" data-slide="7">Cloud Cover</div>
   </div>
 
   <!-- ============ DECK ============ -->
   <main id="deck">
 
-    <!-- SLIDE 1 — TITLE -->
-    <section class="slide" id="slide-1" data-slide="1" aria-label="Title">
+    <!-- SLIDE 1 — TITLE / INTRODUCTION -->
+    <section class="slide" id="slide-1" data-slide="1" aria-label="Introduction">
       <div class="slide-inner slide1-grid">
         <div class="slide1-text">
           <p class="eyebrow" data-reveal="0">Machine Learning Project</p>
@@ -68,7 +68,16 @@
             <span class="line line--accent" data-reveal="2">NEURAL NETWORK</span>
           </h1>
           <p class="hero-subtitle" data-reveal="3">Predicting Tomorrow's Rain Using Machine Learning</p>
-          <button class="btn-primary" id="start-btn" type="button" data-reveal="4">
+          <p class="intro-line" data-reveal="4">Weather conditions can be analysed using historical and current atmospheric data to estimate the possibility of rain.</p>
+
+          <div class="tick-pill-row" data-reveal="5">
+            <span class="tick-pill"><span class="tick-mark">&#10003;</span>Weather Data</span>
+            <span class="tick-pill"><span class="tick-mark">&#10003;</span>Neural Network</span>
+            <span class="tick-pill"><span class="tick-mark">&#10003;</span>Rain Probability</span>
+            <span class="tick-pill"><span class="tick-mark">&#10003;</span>Simple Prediction</span>
+          </div>
+
+          <button class="btn-primary" id="start-btn" type="button" data-reveal="6">
             START PRESENTATION <span class="arrow">→</span>
           </button>
         </div>
@@ -78,38 +87,184 @@
       </div>
     </section>
 
-    <!-- SLIDE 2 — PROBLEM -->
-    <section class="slide" id="slide-2" data-slide="2" aria-label="The Problem">
+    <!-- SLIDE 2 — LITERATURE SURVEY -->
+    <section class="slide" id="slide-2" data-slide="2" aria-label="Literature Survey">
       <div class="slide-inner slide2-layout">
-        <p class="eyebrow" data-reveal="0">The Problem</p>
-        <h2 class="statement" data-reveal="1">Can we predict tomorrow's rain from today's weather conditions?</h2>
+        <p class="eyebrow" data-reveal="0">Background</p>
+        <h2 class="slide-title" data-reveal="1">Literature Survey</h2>
+        <p class="section-lead" data-reveal="2">Before developing my project, I studied different approaches used for weather prediction.</p>
 
-        <div class="orbit" data-reveal="2">
-          <div class="orbit-core">
-            <span class="orbit-core-ring"></span>
-            <span class="orbit-core-glow"></span>
+        <div class="lit-cards">
+          <div class="glass-card lit-card" data-reveal="3">
+            <span class="card-num">CARD 01</span>
+            <h3 class="lit-card-title">Traditional Methods</h3>
+            <ul class="tick-list">
+              <li class="tick-item"><span class="tick-mark">&#10003;</span>Historical weather observations</li>
+              <li class="tick-item"><span class="tick-mark">&#10003;</span>Statistical analysis</li>
+              <li class="tick-item"><span class="tick-mark">&#10003;</span>Rule-based prediction</li>
+            </ul>
           </div>
-          <div class="param-node param-node--1"><span class="flow-dot"></span><span class="param-ico">&#127777;</span><span class="param-label">Temperature</span></div>
-          <div class="param-node param-node--2"><span class="flow-dot"></span><span class="param-ico">&#128167;</span><span class="param-label">Humidity</span></div>
-          <div class="param-node param-node--3"><span class="flow-dot"></span><span class="param-ico">&#9201;</span><span class="param-label">Pressure</span></div>
-          <div class="param-node param-node--4"><span class="flow-dot"></span><span class="param-ico">&#128168;</span><span class="param-label">Wind Speed</span></div>
-          <div class="param-node param-node--5"><span class="flow-dot"></span><span class="param-ico">&#9729;</span><span class="param-label">Cloud Cover</span></div>
+          <div class="glass-card lit-card" data-reveal="4">
+            <span class="card-num">CARD 02</span>
+            <h3 class="lit-card-title">Machine Learning</h3>
+            <ul class="tick-list">
+              <li class="tick-item"><span class="tick-mark">&#10003;</span>Uses multiple weather features</li>
+              <li class="tick-item"><span class="tick-mark">&#10003;</span>Learns patterns from data</li>
+              <li class="tick-item"><span class="tick-mark">&#10003;</span>Supports prediction tasks</li>
+            </ul>
+          </div>
+          <div class="glass-card lit-card" data-reveal="5">
+            <span class="card-num">CARD 03</span>
+            <h3 class="lit-card-title">Neural Networks</h3>
+            <ul class="tick-list">
+              <li class="tick-item"><span class="tick-mark">&#10003;</span>Learns complex relationships</li>
+              <li class="tick-item"><span class="tick-mark">&#10003;</span>Handles multiple inputs</li>
+              <li class="tick-item"><span class="tick-mark">&#10003;</span>Produces probability-based output</li>
+            </ul>
+          </div>
         </div>
 
-        <div class="mini-flow" data-reveal="3">
-          <span class="mini-flow-step is-lit">INPUT</span>
-          <span class="mini-flow-arrow">&#8594;</span>
-          <span class="mini-flow-step">ANALYSIS</span>
-          <span class="mini-flow-arrow">&#8594;</span>
-          <span class="mini-flow-step">PREDICTION</span>
+        <div class="flow-strip" data-reveal="6">
+          <span class="flow-step is-lit">Historical Data</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">Statistical Methods</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">Machine Learning</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">Neural Network</span>
+        </div>
+         <p class="note-line" data-reveal="7">The first is traditional weather prediction, which uses atmospheric measurements and mathematical forecasting methods.</p>
+          <p class="note-line" data-reveal="7">The second is Machine Learning, where the computer learns patterns from historical weather data.</p>
+
+        <p class="note-line" data-reveal="7">The third is Neural Networks, which can learn complex relationships between multiple weather parameters.</p>
+      </div>
+    </section>
+
+    <!-- SLIDE 3 — PROBLEM STATEMENT + OBJECTIVES -->
+    <section class="slide" id="slide-3" data-slide="3" aria-label="Problem Statement and Objectives">
+      <div class="slide-inner slide3-layout">
+        <p class="eyebrow" data-reveal="0">Problem Statement</p>
+        <h2 class="statement" data-reveal="1">Can we predict tomorrow's rain from today's weather conditions?</h2>
+
+        <div class="problem-grid">
+          <div class="problem-visual" data-reveal="2">
+            <div class="orbit">
+              <div class="orbit-core">
+                <span class="orbit-core-ring"></span>
+                <span class="orbit-core-glow"></span>
+              </div>
+              <div class="param-node param-node--1"><span class="flow-dot"></span><span class="param-ico">&#127777;</span><span class="param-label">Temperature</span></div>
+              <div class="param-node param-node--2"><span class="flow-dot"></span><span class="param-ico">&#128167;</span><span class="param-label">Humidity</span></div>
+              <div class="param-node param-node--3"><span class="flow-dot"></span><span class="param-ico">&#9201;</span><span class="param-label">Pressure</span></div>
+              <div class="param-node param-node--4"><span class="flow-dot"></span><span class="param-ico">&#128168;</span><span class="param-label">Wind Speed</span></div>
+              <div class="param-node param-node--5"><span class="flow-dot"></span><span class="param-ico">&#9729;</span><span class="param-label">Cloud Cover</span></div>
+            </div>
+            <div class="flow-strip">
+              <span class="flow-step is-lit">Weather Data</span>
+              <span class="flow-arrow">→</span>
+              <span class="flow-step">Analysis</span>
+              <span class="flow-arrow">→</span>
+              <span class="flow-step">Rain Prediction</span>
+            </div>
+          </div>
+
+          <div class="glass-card objectives-card" data-reveal="3">
+            <span class="card-eyebrow">Objectives</span>
+            <ul class="tick-list">
+              <li class="tick-item"><span class="tick-mark">&#10003;</span>Analyse important weather parameters</li>
+              <li class="tick-item"><span class="tick-mark">&#10003;</span>Prepare data for prediction</li>
+              <li class="tick-item"><span class="tick-mark">&#10003;</span>Build a neural-network model</li>
+              <li class="tick-item"><span class="tick-mark">&#10003;</span>Estimate rain probability</li>
+              <li class="tick-item"><span class="tick-mark">&#10003;</span>Present a simple rain / no-rain result</li>
+            </ul>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- SLIDE 3 — WORKFLOW -->
-    <section class="slide" id="slide-3" data-slide="3" aria-label="System Workflow">
-      <div class="slide-inner slide3-layout">
-        <p class="eyebrow" data-reveal="0">System Workflow</p>
+    <!-- SLIDE 4 — SCOPE & LIMITATIONS -->
+    <section class="slide" id="slide-4" data-slide="4" aria-label="Scope and Limitations">
+      <div class="slide-inner slide4-layout">
+        <p class="eyebrow" data-reveal="0">Project Boundaries</p>
+        <h2 class="slide-title" data-reveal="1">Scope</h2>
+
+        <div class="two-col">
+          <div class="glass-card scope-panel" data-reveal="2">
+            <div class="panel-header">
+              <span class="panel-icon panel-icon--ok">&#10003;</span>
+              <span class="card-eyebrow">Scope</span>
+            </div>
+            <ul class="tick-list">
+              <li class="tick-item"><span class="tick-mark">&#10003;</span>Weather-based prediction</li>
+              <li class="tick-item"><span class="tick-mark">&#10003;</span>Multiple atmospheric inputs</li>
+              <li class="tick-item"><span class="tick-mark">&#10003;</span>Neural-network learning</li>
+              <li class="tick-item"><span class="tick-mark">&#10003;</span>Rain probability estimation</li>
+              <li class="tick-item"><span class="tick-mark">&#10003;</span>Educational ML demonstration</li>
+            </ul>
+          </div>
+          <div class="glass-card limit-panel" data-reveal="3">
+          </div>
+        </div>
+
+        <div class="flow-strip" data-reveal="4">
+          <span class="flow-step is-lit">Input Weather</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">Neural Network</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">Probability</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">Rain / No Rain</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SLIDE 5 — SOFTWARE & HARDWARE REQUIREMENTS -->
+    <section class="slide" id="slide-5" data-slide="5" aria-label="Software and Hardware Requirements">
+      <div class="slide-inner slide5-layout">
+        <p class="eyebrow" data-reveal="0">Project Setup</p>
+        <h2 class="slide-title" data-reveal="1">Requirements</h2>
+
+        <div class="two-col">
+          <div class="glass-card req-panel" data-reveal="2">
+            <span class="card-eyebrow">Software Requirements</span>
+            <ul class="tick-list">
+              <li class="tick-item"><span class="tick-mark">&#10003;</span>Python</li>
+              <li class="tick-item"><span class="tick-mark">&#10003;</span>Machine Learning / Neural Network libraries</li>
+              <li class="tick-item"><span class="tick-mark">&#10003;</span>HTML</li>
+              <li class="tick-item"><span class="tick-mark">&#10003;</span>CSS</li>
+              <li class="tick-item"><span class="tick-mark">&#10003;</span>JavaScript</li>
+              <li class="tick-item"><span class="tick-mark">&#10003;</span>Three.js</li>
+              <li class="tick-item"><span class="tick-mark">&#10003;</span>Modern Web Browser</li>
+            </ul>
+          </div>
+          <div class="glass-card req-panel" data-reveal="3">
+            <span class="card-eyebrow">Hardware Requirements</span>
+            <ul class="tick-list">
+              <li class="tick-item"><span class="tick-mark">&#10003;</span>Computer / Laptop</li>
+              <li class="tick-item"><span class="tick-mark">&#10003;</span>Basic Processor</li>
+              <li class="tick-item"><span class="tick-mark">&#10003;</span>4 GB+ RAM recommended</li>
+              <li class="tick-item"><span class="tick-mark">&#10003;</span>Keyboard / Mouse</li>
+              <li class="tick-item"><span class="tick-mark">&#10003;</span>Internet connection if external resources are used</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="req-icons" data-reveal="4">
+          <div class="req-icon-item"><span class="req-icon-badge">&#128187;</span><span>Laptop</span></div>
+          <div class="req-icon-item"><span class="req-icon-badge">&#128013;</span><span>Python</span></div>
+          <div class="req-icon-item"><span class="req-icon-badge">&#127760;</span><span>Browser</span></div>
+          <div class="req-icon-item"><span class="req-icon-badge">&#129504;</span><span>Neural Network</span></div>
+          <div class="req-icon-item"><span class="req-icon-badge">&#9651;</span><span>Three.js</span></div>
+        </div>
+
+        <p class="tagline-mono" data-reveal="5">LIGHTWEIGHT &bull; INTERACTIVE &bull; PRESENTATION READY</p>
+      </div>
+    </section>
+
+    <!-- SLIDE 6 — METHODOLOGY / SYSTEM WORKFLOW -->
+    <section class="slide" id="slide-6" data-slide="6" aria-label="Methodology and System Workflow">
+      <div class="slide-inner slide6-layout">
+        <p class="eyebrow" data-reveal="0">Methodology</p>
         <h2 class="slide-title" data-reveal="1">How The System Works</h2>
 
         <div class="pipeline-wrap" data-reveal="2">
@@ -117,50 +272,72 @@
             <div class="data-particle" id="data-particle"></div>
 
             <div class="stage" data-stage="0">
+              <span class="stage-check">&#10003;</span>
               <div class="stage-icon">&#128225;</div>
               <div class="stage-label">Weather Data</div>
+              <div class="stage-sub">Collect</div>
             </div>
             <div class="pipe-seg"></div>
             <div class="stage" data-stage="1">
+              <span class="stage-check">&#10003;</span>
               <div class="stage-icon">&#129513;</div>
               <div class="stage-label">Preprocessing</div>
               <div class="stage-sub">Clean</div>
             </div>
             <div class="pipe-seg"></div>
             <div class="stage" data-stage="2">
+              <span class="stage-check">&#10003;</span>
               <div class="stage-icon">&#128202;</div>
               <div class="stage-label">Feature Scaling</div>
               <div class="stage-sub">Transform</div>
             </div>
             <div class="pipe-seg"></div>
             <div class="stage" data-stage="3">
+              <span class="stage-check">&#10003;</span>
               <div class="stage-icon">&#129504;</div>
               <div class="stage-label">Neural Network</div>
               <div class="stage-sub">Learn</div>
             </div>
             <div class="pipe-seg"></div>
             <div class="stage" data-stage="4">
+              <span class="stage-check">&#10003;</span>
               <div class="stage-icon">&#127783;&#65039;</div>
               <div class="stage-label">Rain Probability</div>
               <div class="stage-sub">Predict</div>
             </div>
             <div class="pipe-seg"></div>
             <div class="stage" data-stage="5">
+              <span class="stage-check">&#10003;</span>
               <div class="stage-icon">&#9878;&#65039;</div>
               <div class="stage-label">Rain / No Rain</div>
+              <div class="stage-sub">Decide</div>
             </div>
           </div>
+        </div>
+
+        <div class="flow-strip flow-strip--story" data-reveal="3">
+          <span class="flow-step is-lit">Weather</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">Data</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">Processing</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">Neural Network</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">Analysis</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">Prediction</span>
         </div>
       </div>
     </section>
 
-    <!-- SLIDE 4 — NEURAL NETWORK -->
-    <section class="slide" id="slide-4" data-slide="4" aria-label="Inside the Neural Network">
-      <div class="slide-inner slide4-layout">
-        <p class="eyebrow" data-reveal="0">Model Architecture</p>
-        <h2 class="slide-title" data-reveal="1">Inside The Neural Network</h2>
+    <!-- SLIDE 7 — NEURAL NETWORK + TESTING + DEMO RESULT -->
+    <section class="slide" id="slide-7" data-slide="7" aria-label="Neural Network and Testing">
+      <div class="slide-inner slide7-layout">
+        <p class="eyebrow" data-reveal="0">Model &amp; Verification</p>
+        <h2 class="slide-title" data-reveal="1">Neural Network &amp; Testing</h2>
 
-        <div class="network-wrap" data-reveal="2">
+        <div class="network-wrap network-wrap--compact" data-reveal="2">
           <canvas id="main-net-canvas"></canvas>
 
           <div class="layer-label layer-label--input">
@@ -174,36 +351,30 @@
             <span class="layer-label-title">Output Layer</span>
             <span class="layer-label-sub">Sigmoid</span>
           </div>
-          <div class="layer-label layer-label--result">Rain Probability</div>
 
           <div class="formula-badge formula-badge--left">ReLU(x) = max(0, x)</div>
-          <div class="formula-badge formula-badge--right">Sigmoid(x) = 1 / (1 + e<sup>&minus;x</sup>)</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SLIDE 5 — PREDICTION -->
-    <section class="slide" id="slide-5" data-slide="5" aria-label="From Weather to Prediction">
-      <div class="slide-inner slide5-layout">
-        <p class="eyebrow" data-reveal="0">Demo Walkthrough</p>
-        <h2 class="slide-title" data-reveal="1">From Weather To Prediction</h2>
-
-        <div class="predict-layout" data-reveal="2">
-          <div class="glass-card predict-inputs">
-            <div class="demo-tag">DEMO PREDICTION</div>
-            <div class="input-row"><span>Temperature</span><span class="mono">28°C</span></div>
-            <div class="input-row"><span>Humidity</span><span class="mono">75%</span></div>
-            <div class="input-row"><span>Pressure</span><span class="mono">1008 hPa</span></div>
-            <div class="input-row"><span>Wind Speed</span><span class="mono">14 km/h</span></div>
-            <div class="input-row"><span>Cloud Cover</span><span class="mono">82%</span></div>
+          <div class="formula-badge formula-badge--right">
+            <div>Sigmoid(x) = 1 / (1 + e<sup>&minus;x</sup>)</div>
+            <div class="formula-result-tag">Rain Probability</div>
           </div>
+        </div>
 
-          <div class="glass-card predict-process" id="predict-process">
-            <div class="process-status" id="process-status">
+        <div class="nn-bottom-grid" data-reveal="3">
+          <div class="glass-card demo-card">
+            <div class="demo-tag">DEMO PREDICTION</div>
+            <div class="demo-inputs-compact">
+              <div class="input-row input-row--compact"><span>Temperature</span><span class="mono">28°C</span></div>
+              <div class="input-row input-row--compact"><span>Humidity</span><span class="mono">75%</span></div>
+              <div class="input-row input-row--compact"><span>Pressure</span><span class="mono">1008 hPa</span></div>
+              <div class="input-row input-row--compact"><span>Wind Speed</span><span class="mono">14 km/h</span></div>
+              <div class="input-row input-row--compact"><span>Cloud Cover</span><span class="mono">82%</span></div>
+            </div>
+
+            <div class="process-status process-status-sm" id="process-status">
               <span id="process-status-text">ANALYSING</span><span class="dots"><span>.</span><span>.</span><span>.</span></span>
             </div>
 
-            <div class="result-panel" id="result-panel">
+            <div class="result-inline" id="result-panel">
               <div class="gauge-wrap">
                 <svg class="gauge" viewBox="0 0 200 200" id="gauge-svg">
                   <circle class="gauge-track" cx="100" cy="100" r="86"></circle>
@@ -214,19 +385,34 @@
                   <span class="gauge-caption">Rain Probability</span>
                 </div>
               </div>
-              <div class="risk-tag" id="risk-tag">HIGH RISK</div>
-              <div class="risk-line">Rain Tomorrow: <strong>YES</strong></div>
+              <div class="result-inline-text">
+                <div class="risk-tag" id="risk-tag">HIGH RISK</div>
+                <div class="risk-line">Rain Tomorrow: <strong>YES</strong></div>
+              </div>
             </div>
+
+            <p class="demo-disclaimer">Example values for presentation only.</p>
+          </div>
+
+          <div class="glass-card testing-card">
+            <span class="card-eyebrow">Testing</span>
+            <ul class="tick-list">
+              <li class="tick-item" data-reveal="4"><span class="tick-mark">&#10003;</span>Input values accepted</li>
+              <li class="tick-item" data-reveal="5"><span class="tick-mark">&#10003;</span>Data flow verified</li>
+              <li class="tick-item" data-reveal="6"><span class="tick-mark">&#10003;</span>Neural-network flow verified</li>
+              <li class="tick-item" data-reveal="7"><span class="tick-mark">&#10003;</span>Probability output displayed</li>
+              <li class="tick-item" data-reveal="8"><span class="tick-mark">&#10003;</span>Final prediction displayed</li>
+            </ul>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- SLIDE 6 — CONCLUSION -->
-    <section class="slide" id="slide-6" data-slide="6" aria-label="Result & Conclusion">
-      <div class="slide-inner slide6-layout">
+    <!-- SLIDE 8 — RESULT & CONCLUSION -->
+    <section class="slide" id="slide-8" data-slide="8" aria-label="Result and Conclusion">
+      <div class="slide-inner slide8-layout">
         <p class="eyebrow" data-reveal="0">Result &amp; Conclusion</p>
-        <h2 class="slide-title" data-reveal="1">From Data To A Decision</h2>
+        <h2 class="slide-title" data-reveal="1">Result &amp; Conclusion</h2>
 
         <div class="conclusion-grid" data-reveal="2">
           <div class="point-card"><span class="point-num">01</span><span class="point-label">Weather Data</span></div>
@@ -235,11 +421,33 @@
           <div class="point-card"><span class="point-num">04</span><span class="point-label">Prediction</span></div>
         </div>
 
-        <p class="conclusion-statement" data-reveal="3">Machine learning transforms atmospheric data into an understandable rain prediction.</p>
+        <div class="glass-card result-card" data-reveal="3">
+          <span class="card-eyebrow">Result</span>
+          <ul class="tick-list result-tick-grid">
+            <li class="tick-item"><span class="tick-mark">&#10003;</span>Weather parameters are converted into model inputs</li>
+            <li class="tick-item"><span class="tick-mark">&#10003;</span>Neural network processes the input features</li>
+            <li class="tick-item"><span class="tick-mark">&#10003;</span>Probability-based output is generated</li>
+            <li class="tick-item"><span class="tick-mark">&#10003;</span>Final result is presented as Rain / No Rain</li>
+          </ul>
+        </div>
 
-        <button class="btn-primary" id="restart-btn" type="button" data-reveal="4">
+        <p class="conclusion-statement" data-reveal="4">Machine Learning transforms atmospheric data into an understandable rain prediction.</p>
+
+        <div class="flow-strip flow-strip--tagline" data-reveal="5">
+          <span class="flow-step is-lit">Weather</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">Data</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">AI</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-step">Prediction</span>
+        </div>
+
+        <button class="btn-primary" id="restart-btn" type="button" data-reveal="6">
           RESTART PRESENTATION <span class="arrow">&#8635;</span>
         </button>
+
+        <p class="thank-you" data-reveal="7">Thank You</p>
       </div>
     </section>
 
@@ -252,7 +460,7 @@
     </button>
 
     <div class="nav-center">
-      <span class="nav-counter"><span id="counter-current">01</span><span class="nav-counter-sep">/</span><span id="counter-total">06</span></span>
+      <span class="nav-counter"><span id="counter-current">01</span><span class="nav-counter-sep">/</span><span id="counter-total">08</span></span>
       <div class="nav-dots" id="nav-dots"></div>
     </div>
 
